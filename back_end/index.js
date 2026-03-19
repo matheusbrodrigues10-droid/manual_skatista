@@ -2,6 +2,11 @@ const express = require("express")
 const app = express()
 const db = require("./db")
 const cors = require("cors")
+const swaggerUi = require("swagger-ui-express")
+const swaggerFile = require("./swagger.json")
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
 
 app.use(express.json())
 app.use(cors())
