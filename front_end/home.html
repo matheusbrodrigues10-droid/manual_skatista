@@ -1,0 +1,10 @@
+<h1>Bem-vindo!</h1>
+
+<button onclick="logout()">Sair</button>
+
+<script>
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+</script>

@@ -1,10 +1,18 @@
-const mysql = require("mysql2")
+const mysql = require("mysql2");
 
-const conexao = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "manualskatista_tcc"
-})
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "manualskatista_tcc"
+});
 
-module.exports = conexao
+connection.connect((err) => {
+  if (err) {
+    console.error("Erro ao conectar:", err);
+  } else {
+    console.log("Conectado ao banco!");
+  }
+});
+
+module.exports = connection;

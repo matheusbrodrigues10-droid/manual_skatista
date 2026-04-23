@@ -1,0 +1,23 @@
+<h2>Cadastro</h2>
+
+<input id="nome" placeholder="Nome"><br>
+<input id="email" placeholder="Email"><br>
+<input id="senha" placeholder="Senha"><br>
+
+<button onclick="cadastrar()">Cadastrar</button>
+
+<script>
+async function cadastrar() {
+  await fetch("http://localhost:3000/usuarios", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      nome: nome.value,
+      email: email.value,
+      senha: senha.value
+    })
+  });
+
+  alert("Usuário criado!");
+}
+</script>

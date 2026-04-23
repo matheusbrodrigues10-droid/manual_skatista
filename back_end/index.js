@@ -1,86 +1,92 @@
-const express = require("express")
-const app = express()
-const db = require("./db")
-const cors = require("cors")
-const swaggerUi = require("swagger-ui-express")
-const swaggerFile = require("./swagger.json")
+const express = require("express");
+const cors = require("cors");
+const db = require("./db");
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile))
+const app = express();
 
+app.use(cors());
+app.use(express.json());
 
-app.use(express.json())
-app.use(cors())
+/* =========================
+   LOGIN
+========================= */
+app.post("/login", (req, res) => {
+  const { email, senha } = req.body;
 
-// INSERIR USUARIO
-app.post("/usuarios", (req,res)=>{
+  const sql = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
 
-    const {nome,email,senha} = req.body
+  db.query(sql, [email, senha], (err, result) => {
+    if (err) return res.status(500).json(err);
 
-    const sql = "INSERT INTO usuarios (nome,email,senha) VALUES (?,?,?)"
+    if (result.length > 0) {
+      res.json(result[0]);
+    } else {
+      res.status(401).json({ erro: "Email ou senha inválidos" });
+    }
+  });
+});
 
-    db.query(sql,[nome,email,senha],(err,result)=>{
-        if(err){
-            res.send(err)
-        }else{
-            res.send("Usuario cadastrado")
-        }
-    })
+/* =========================
+   CADASTRO
+========================= */
+app.post("/usuarios", (req, res) => {
+  const { nome, email, senha } = req.body;
 
-})
+  const sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
 
+  db.query(sql, [nome, email, senha], (err) => {
+    if (err) return res.status(500).json(err);
 
-// VISUALIZAR USUARIOS
-app.get("/usuarios",(req,res)=>{
+    res.json({ mensagem: "Usuário criado" });
+  });
+});
 
-    const sql = "SELECT * FROM usuarios"
+/* =========================
+   EDITAR USUARIO
+========================= */
+app.put("/usuarios/:id", (req, res) => {
+  const { nome, email, senha } = req.body;
+  const { id } = req.params;
 
-    db.query(sql,(err,result)=>{
-        if(err){
-            res.send(err)
-        }else{
-            res.send(result)
-        }
-    })
+  const sql = "UPDATE usuarios SET nome=?, email=?, senha=? WHERE id=?";
 
-})
+  db.query(sql, [nome, email, senha, id], (err) => {
+    if (err) return res.status(500).json(err);
 
+    res.json({ mensagem: "Atualizado" });
+  });
+});
 
-// ATUALIZAR USUARIO
-app.put("/usuarios/:id",(req,res)=>{
+/* =========================
+   TROCAR SENHA
+========================= */
+app.put("/trocar-senha", (req, res) => {
+  const { id, novaSenha } = req.body;
 
-    const id = req.params.id
-    const {nome,email,senha} = req.body
+  const sql = "UPDATE usuarios SET senha=? WHERE id=?";
 
-    const sql = "UPDATE usuarios SET nome=?, email=?, senha=? WHERE id=?"
+  db.query(sql, [novaSenha, id], (err) => {
+    if (err) return res.status(500).json(err);
 
-    db.query(sql,[nome,email,senha,id],(err,result)=>{
-        if(err){
-            res.send(err)
-        }else{
-            res.send("Usuario atualizado")
-        }
-    })
+    res.json({ mensagem: "Senha alterada" });
+  });
+});
 
-})
+/* =========================
+   RECUPERAR SENHA
+========================= */
+app.put("/recuperar", (req, res) => {
+  const { email, novaSenha } = req.body;
 
+  const sql = "UPDATE usuarios SET senha=? WHERE email=?";
 
-// DELETAR USUARIO
-app.delete("/usuarios/:id",(req,res)=>{
+  db.query(sql, [novaSenha, email], (err) => {
+    if (err) return res.status(500).json(err);
 
-    const id = req.params.id
+    res.json({ mensagem: "Senha redefinida" });
+  });
+});
 
-    const sql = "DELETE FROM usuarios WHERE id=?"
-
-    db.query(sql,[id],(err,result)=>{
-        if(err){
-            res.send(err)
-        }else{
-            res.send("Usuario deletado")
-        }
-    })
-
-})
-
-app.listen(3001,()=>{
-    console.log("Servidor rodando")
-})
+app.listen(3000, () => {
+  console.log("Servidor rodando na porta 3000");
+});
