@@ -1,9 +1,658 @@
-<h1>Manual Skatista 🛹</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual do Skatista</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<button onclick="irLogin()">Acessar Intranet</button>
+        :root {
+            --primary: #ff6b35;
+            --secondary: #2ec4b6;
+            --dark: #1a1a2e;
+            --light: #f7f7f7;
+            --gradient: linear-gradient(135deg, #ff6b35, #f7c948);
+        }
 
-<script>
-function irLogin() {
-  window.location.href = "login.html";
+        body {
+            background: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--dark);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a, .nav-menu button {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .nav-menu a:hover, .nav-menu button:hover {
+            color: var(--primary);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn-entrar {
+            background: var(--gradient) !important;
+            color: white !important;
+            padding: 0.7rem 1.5rem !important;
+            border-radius: 25px !important;
+            font-weight: bold !important;
+        }
+
+        .btn-sair {
+            background: #dc3545 !important;
+            color: white !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 5px !important;
+        }
+
+        .hero {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services {
+            max-width: 1200px;
+            margin: -3rem auto 2rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
+        }
+
+        .btn-voltar {
+            background: #6c757d;
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .link-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .welcome-banner {
+            background: var(--gradient);
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: auto;
+        }
+
+        hr {
+            margin: 20px 0;
+            border-color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .services {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo" onclick="navegar('home')">🛹 Manual do Skatista</div>
+            <div class="nav-menu" id="navMenu"></div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main id="mainContent"></main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Manual do Skatista © 2026 - Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        // ==================== CONFIGURAÇÃO ====================
+        const API_URL = 'http://localhost:3000';
+        let usuarioLogado = null;
+
+        // Verificar se já está logado
+        const usuarioStorage = localStorage.getItem('usuario');
+        if (usuarioStorage) {
+            usuarioLogado = JSON.parse(usuarioStorage);
+        }
+
+        // ==================== INICIAR ====================
+        navegar('home');
+
+        // ==================== NAVEGAÇÃO ====================
+        function navegar(pagina) {
+            const main = document.getElementById('mainContent');
+            
+            switch(pagina) {
+                case 'home':
+                    if (usuarioLogado) {
+                        carregarHomeLogada();
+                    } else {
+                        carregarHomePublica();
+                    }
+                    break;
+                case 'login':
+                    carregarLogin();
+                    break;
+                case 'cadastro':
+                    carregarCadastro();
+                    break;
+                case 'sobre':
+                    carregarSobre();
+                    break;
+            }
+            
+            atualizarMenu();
+        }
+
+        function atualizarMenu() {
+            const menu = document.getElementById('navMenu');
+            
+            if (usuarioLogado) {
+                menu.innerHTML = `
+                    <a onclick="navegar('home')">Início</a>
+                    <a onclick="navegar('sobre')">Sobre Nós</a>
+                    <span style="color:white;">👤 ${usuarioLogado.nome}</span>
+                    <button class="btn-sair" onclick="logout()">Sair</button>
+                `;
+            } else {
+                menu.innerHTML = `
+                    <a onclick="navegar('home')">Início</a>
+                    <a onclick="navegar('sobre')">Sobre Nós</a>
+                    <a onclick="navegar('login')" class="btn-entrar">Entrar</a>
+                `;
+            }
+        }
+
+        // ==================== HOME PÚBLICA ====================
+        function carregarHomePublica() {
+            document.getElementById('mainContent').innerHTML = `
+                <section class="hero">
+                    <h1>Manual do Skatista</h1>
+                    <p>Seu guia completo para dominar o skate. Do iniciante ao avançado!</p>
+                </section>
+                <section class="services">
+                    <div class="service-card">
+                        <div class="service-icon">🛹</div>
+                        <h3>Manobras</h3>
+                        <p>Aprenda manobras do nível iniciante ao avançado.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🔧</div>
+                        <h3>Montagem</h3>
+                        <p>Vídeos de montagem, manutenção e troca de peças.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">📍</div>
+                        <h3>Pistas</h3>
+                        <p>Melhores pistas próximas a você.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">⭐</div>
+                        <h3>Equipamentos</h3>
+                        <p>Melhores custo-benefício para performance.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👕</div>
+                        <h3>Roupas</h3>
+                        <p>Conforto e estilo para andar de skate.</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        // ==================== HOME LOGADA ====================
+        function carregarHomeLogada() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="welcome-banner">
+                    <h2>Bem-vindo, ${usuarioLogado.nome}! 🛹</h2>
+                    <p>Pronto para evoluir no skate hoje?</p>
+                </div>
+                <section class="services">
+                    <div class="service-card">
+                        <div class="service-icon">🛹</div>
+                        <h3>Manobras</h3>
+                        <p>Aprenda manobras do seu nível.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🔧</div>
+                        <h3>Montagem</h3>
+                        <p>Vídeos e tutoriais completos.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">📍</div>
+                        <h3>Pistas</h3>
+                        <p>Encontre pistas próximas.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">⭐</div>
+                        <h3>Equipamentos</h3>
+                        <p>Melhores equipamentos.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👕</div>
+                        <h3>Roupas</h3>
+                        <p>Roupas e calçados ideais.</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        // ==================== LOGIN ====================
+        function carregarLogin() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="form-container">
+                    <h2>🔑 Entrar</h2>
+                    <form onsubmit="fazerLogin(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="loginEmail" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <input type="password" id="loginSenha" required placeholder="Sua senha">
+                        </div>
+                        <button type="submit" class="btn">Entrar</button>
+                    </form>
+                    <div class="link-text">
+                        Não tem conta? <a onclick="navegar('cadastro')">Cadastre-se</a>
+                    </div>
+                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
+                </div>
+            `;
+        }
+
+        async function fazerLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    
+    console.log('🔑 Tentando login...');
+    console.log('Email:', email);
+    console.log('URL:', API_URL + '/login');
+    
+    // Verificar se o servidor está acessível primeiro
+    try {
+        const testResponse = await fetch(API_URL + '/tempos');
+        console.log('✅ Servidor acessível!');
+    } catch (error) {
+        console.error('❌ Servidor INACESSÍVEL!');
+        alert('❌ Servidor não está rodando!\n\nExecute: node index.js\nno terminal do VS Code');
+        return;
+    }
+    
+    try {
+        const response = await fetch(API_URL + '/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+        });
+        
+        console.log('📥 Status:', response.status);
+        
+        const data = await response.json();
+        console.log('📦 Dados recebidos:', data);
+        
+        if (response.ok) {
+            // SALVAR usuário
+            usuarioLogado = data;
+            localStorage.setItem('usuario', JSON.stringify(data));
+            
+            console.log('✅ Login bem-sucedido!');
+            console.log('Usuário salvo:', usuarioLogado);
+            
+            // Mostrar mensagem e redirecionar
+            alert('✅ Login realizado com sucesso!');
+            navegar('home');
+        } else {
+            alert('❌ ' + (data.erro || 'Email ou senha inválidos'));
+        }
+        
+    } catch (error) {
+        console.error('❌ ERRO DETALHADO:', error);
+        alert('❌ Erro de conexão!\n\nVerifique se:\n1. Servidor está rodando (node index.js)\n2. URL está correta: ' + API_URL);
+    }
 }
-</script>
+
+        // ==================== CADASTRO ====================
+        async function carregarCadastro() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="form-container">
+                    <h2>📝 Criar Conta</h2>
+                    <form onsubmit="fazerCadastro(event)">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="cadNome" required placeholder="Seu nome completo">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="cadEmail" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <input type="password" id="cadSenha" required placeholder="Crie uma senha">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirmar Senha</label>
+                            <input type="password" id="cadConfirmarSenha" required placeholder="Confirme sua senha">
+                        </div>
+                        
+                        <hr>
+                        <h3 style="text-align:center; color: var(--dark);">🎯 Perfil do Skatista</h3>
+                        
+                        <div class="form-group">
+                            <label>Há quanto tempo anda de skate?</label>
+                            <select id="cadTempo" required>
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nível no skate</label>
+                            <select id="cadNivel" required>
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Objetivo no skate</label>
+                            <select id="cadObjetivo" required>
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn">Criar Conta</button>
+                    </form>
+                    <div class="link-text">
+                        Já tem conta? <a onclick="navegar('login')">Faça login</a>
+                    </div>
+                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
+                </div>
+            `;
+            
+            // Carregar opções dos selects
+            carregarOpcoes();
+        }
+
+        async function carregarOpcoes() {
+            try {
+                // Tempos
+                const respTempo = await fetch(API_URL + '/tempos');
+                const tempos = await respTempo.json();
+                const selTempo = document.getElementById('cadTempo');
+                selTempo.innerHTML = '<option value="">Selecione...</option>';
+                tempos.forEach(t => {
+                    selTempo.innerHTML += `<option value="${t.id}">${t.descricao}</option>`;
+                });
+                
+                // Níveis
+                const respNivel = await fetch(API_URL + '/niveis');
+                const niveis = await respNivel.json();
+                const selNivel = document.getElementById('cadNivel');
+                selNivel.innerHTML = '<option value="">Selecione...</option>';
+                niveis.forEach(n => {
+                    selNivel.innerHTML += `<option value="${n.id}">${n.descricao}</option>`;
+                });
+                
+                // Objetivos
+                const respObj = await fetch(API_URL + '/objetivos');
+                const objetivos = await respObj.json();
+                const selObj = document.getElementById('cadObjetivo');
+                selObj.innerHTML = '<option value="">Selecione...</option>';
+                objetivos.forEach(o => {
+                    selObj.innerHTML += `<option value="${o.id}">${o.descricao}</option>`;
+                });
+                
+                console.log('✅ Opções carregadas!');
+            } catch (error) {
+                console.error('❌ Erro ao carregar opções:', error);
+            }
+        }
+
+        async function fazerCadastro(event) {
+            event.preventDefault();
+            
+            const nome = document.getElementById('cadNome').value;
+            const email = document.getElementById('cadEmail').value;
+            const senha = document.getElementById('cadSenha').value;
+            const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
+            
+            console.log('📝 Cadastro:', { nome, email });
+            
+            // Validações
+            if (senha !== confirmarSenha) {
+                alert('❌ As senhas não coincidem!');
+                return;
+            }
+            
+            if (senha.length < 6) {
+                alert('❌ Senha deve ter no mínimo 6 caracteres!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_URL + '/usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, senha })
+                });
+                
+                const data = await response.json();
+                console.log('Resposta:', data);
+                
+                if (response.ok) {
+                    alert('✅ Conta criada com sucesso! Faça login.');
+                    navegar('login');
+                } else {
+                    alert('❌ ' + (data.erro || 'Erro ao cadastrar'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro de conexão com o servidor!');
+            }
+        }
+
+        // ==================== SOBRE ====================
+        function carregarSobre() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="form-container">
+                    <h2>📖 Sobre Nós</h2>
+                    <p style="line-height: 1.8; color: #555;">
+                        O Manual do Skatista é um projeto de TCC desenvolvido para ajudar skatistas 
+                        de todos os níveis a evoluir no esporte.
+                    </p>
+                    <p style="line-height: 1.8; color: #555; margin-top: 1rem;">
+                        Nossa missão é fornecer conteúdo de qualidade sobre manobras, equipamentos, 
+                        pistas e tudo relacionado ao universo do skate.
+                    </p>
+                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
+                </div>
+            `;
+        }
+
+        // ==================== LOGOUT ====================
+        function logout() {
+            usuarioLogado = null;
+            localStorage.removeItem('usuario');
+            alert('👋 Até logo!');
+            navegar('home');
+        }
+    </script>
+</body>
+</html>
