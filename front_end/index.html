@@ -4,268 +4,690 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual do Skatista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        /* =============================================
+           RESET & ROOT
+        ============================================= */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary: #ff6b35;
-            --secondary: #2ec4b6;
-            --dark: #1a1a2e;
-            --light: #f7f7f7;
-            --gradient: linear-gradient(135deg, #ff6b35, #f7c948);
+            --red: #D72638;
+            --red-dark: #a81c2a;
+            --red-glow: rgba(215, 38, 56, 0.35);
+            --black: #0a0a0a;
+            --black-mid: #141414;
+            --black-soft: #1e1e1e;
+            --white: #f5f5f5;
+            --white-dim: rgba(245, 245, 245, 0.08);
+            --grey: #888888;
+            --grey-light: #cccccc;
+            --font-display: 'Oswald', sans-serif;
+            --font-condensed: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow', sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5);
+            --shadow-red: 0 8px 30px rgba(215, 38, 56, 0.4);
         }
 
+        html { scroll-behavior: smooth; }
+
         body {
-            background: var(--light);
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-body);
+            font-weight: 400;
+            line-height: 1.6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--black-mid); }
+        ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+        /* =============================================
+           HEADER
+        ============================================= */
         .header {
-            background: var(--dark);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
+            background: rgba(10, 10, 10, 0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(215, 38, 56, 0.25);
+            padding: 0 2.5rem;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 68px;
         }
 
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+            max-width: 1200px; margin: 0 auto; height: 100%;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .logo {
-            color: var(--primary);
-            font-size: 1.8rem;
-            font-weight: bold;
-            cursor: pointer;
+            color: var(--white); font-family: var(--font-display);
+            font-size: 1.5rem; font-weight: 700; text-decoration: none;
+            letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
         }
 
-        .nav-menu {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+        .nav-menu { display: flex; gap: 0.25rem; align-items: center; flex-wrap: wrap; }
 
         .nav-menu a, .nav-menu button {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 1rem;
+            color: var(--grey-light); text-decoration: none;
+            font-family: var(--font-condensed); font-weight: 600;
+            font-size: 0.88rem; letter-spacing: 0.1em; text-transform: uppercase;
+            padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+            background: none; border: none; cursor: pointer;
+            transition: color var(--transition), background var(--transition);
         }
-
-        .nav-menu a:hover, .nav-menu button:hover {
-            color: var(--primary);
-            background: rgba(255,255,255,0.1);
-        }
+        .nav-menu a:hover, .nav-menu button:hover { color: var(--white); background: var(--white-dim); }
 
         .btn-entrar {
-            background: var(--gradient) !important;
-            color: white !important;
-            padding: 0.7rem 1.5rem !important;
-            border-radius: 25px !important;
-            font-weight: bold !important;
+            background: var(--red) !important; color: var(--white) !important;
+            border: 1.5px solid var(--red) !important; border-radius: var(--radius-sm) !important;
+            font-weight: 700 !important;
         }
+        .btn-entrar:hover { background: transparent !important; color: var(--red) !important; }
 
         .btn-sair {
-            background: #dc3545 !important;
-            color: white !important;
-            padding: 0.5rem 1rem !important;
-            border-radius: 5px !important;
+            background: transparent !important; color: var(--red) !important;
+            border: 1.5px solid var(--red) !important; border-radius: var(--radius-sm) !important;
+            font-weight: 700 !important;
+        }
+        .btn-sair:hover { background: var(--red) !important; color: var(--white) !important; }
+
+        .user-name {
+            color: var(--grey-light); font-family: var(--font-condensed);
+            font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 0.5rem;
         }
 
+        /* =============================================
+           MAIN CONTENT
+        ============================================= */
+        #mainContent {
+            margin-top: 68px;
+            margin-bottom: 60px;
+            flex: 1;
+        }
+
+        /* =============================================
+           HERO
+        ============================================= */
         .hero {
-            background: var(--dark);
-            color: white;
-            padding: 4rem 2rem;
+            background: var(--black-mid);
+            color: var(--white);
+            padding: 6rem 2rem 8rem;
             text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .services {
-            max-width: 1200px;
-            margin: -3rem auto 2rem;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
             position: relative;
-            z-index: 10;
+            overflow: hidden;
         }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(-55deg, transparent, transparent 30px,
+                rgba(215, 38, 56, 0.025) 30px, rgba(215, 38, 56, 0.025) 31px);
+            pointer-events: none;
+        }
+        .hero::after {
+            content: ''; position: absolute; top: -80px; left: 50%;
+            transform: translateX(-50%); width: 700px; height: 350px;
+            background: radial-gradient(ellipse at center, rgba(215, 38, 56, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            display: inline-block; font-family: var(--font-condensed);
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.22em;
+            text-transform: uppercase; color: var(--red);
+            background: rgba(215, 38, 56, 0.1); border: 1px solid rgba(215, 38, 56, 0.3);
+            padding: 0.3rem 1.1rem; border-radius: 2px; margin-bottom: 1.5rem;
+            position: relative; z-index: 1;
+        }
+        .hero h1 {
+            font-family: var(--font-display); font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 700; line-height: 1.0; text-transform: uppercase;
+            color: var(--white); margin-bottom: 1.5rem; position: relative; z-index: 1;
+        }
+        .hero h1 em { font-style: normal; color: var(--red); }
+        .hero p {
+            font-size: 1.05rem; color: var(--grey-light); max-width: 560px;
+            margin: 0 auto 2.5rem; font-weight: 300; position: relative; z-index: 1;
+        }
+        .hero-actions {
+            display: flex; gap: 1rem; justify-content: center;
+            flex-wrap: wrap; position: relative; z-index: 1;
+        }
+        .btn-hero-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--red); color: var(--white); text-decoration: none;
+            font-family: var(--font-condensed); font-weight: 700; font-size: 0.9rem;
+            letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 2rem;
+            border-radius: var(--radius-sm); border: 2px solid var(--red); cursor: pointer;
+            transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+        }
+        .btn-hero-primary:hover { background: transparent; color: var(--red); box-shadow: var(--shadow-red); }
+        .btn-hero-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: transparent; color: var(--white); text-decoration: none;
+            font-family: var(--font-condensed); font-weight: 600; font-size: 0.9rem;
+            letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 2rem;
+            border-radius: var(--radius-sm); border: 2px solid rgba(245,245,245,0.2); cursor: pointer;
+            transition: border-color var(--transition);
+        }
+        .btn-hero-secondary:hover { border-color: var(--white); }
 
+        /* Welcome Banner */
+        .welcome-banner {
+            background: var(--black-mid); padding: 5rem 2rem 7rem;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .welcome-banner::before {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(-55deg, transparent, transparent 30px,
+                rgba(215, 38, 56, 0.025) 30px, rgba(215, 38, 56, 0.025) 31px);
+            pointer-events: none;
+        }
+        .welcome-banner::after {
+            content: ''; position: absolute; top: -60px; left: 50%;
+            transform: translateX(-50%); width: 600px; height: 300px;
+            background: radial-gradient(ellipse at center, rgba(215, 38, 56, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .welcome-banner h2 {
+            font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700; text-transform: uppercase; color: var(--white);
+            margin-bottom: 0.75rem; position: relative; z-index: 1;
+        }
+        .welcome-banner h2 em { font-style: normal; color: var(--red); }
+        .welcome-banner p { color: var(--grey-light); font-size: 1rem; font-weight: 300; position: relative; z-index: 1; }
+
+        /* =============================================
+           STAT STRIP
+        ============================================= */
+        .stat-strip { background: var(--red); padding: 0.9rem 2rem; }
+        .stat-strip-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem;
+        }
+        .stat-item { text-align: center; }
+        .stat-number { display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1; }
+        .stat-label { display: block; font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-top: 2px; }
+        .stat-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.25); }
+
+        /* =============================================
+           SERVICES SECTION
+        ============================================= */
+        .services-section { max-width: 1200px; margin: 0 auto; padding: 4.5rem 2rem; }
+        .section-label { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+        .section-label::before { content: ''; display: block; width: 24px; height: 3px; background: var(--red); border-radius: 2px; }
+        .section-label span { font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); }
+        .services-title { font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; text-transform: uppercase; color: var(--white); margin-bottom: 2.5rem; }
+        .services-title em { font-style: normal; color: var(--red); }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
         .service-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            text-align: center;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .service-card h3 {
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .service-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .form-container {
-            max-width: 500px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .form-container h2 {
-            text-align: center;
-            color: var(--dark);
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); padding: 2rem 1.75rem;
+            text-align: left; position: relative; overflow: hidden;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
             cursor: pointer;
+        }
+        .service-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--red); transform: scaleX(0); transform-origin: left;
+            transition: transform var(--transition);
+        }
+        .service-card:hover { border-color: rgba(215,38,56,0.3); transform: translateY(-6px); box-shadow: var(--shadow-card); }
+        .service-card:hover::before { transform: scaleX(1); }
+        .service-icon { font-size: 2rem; margin-bottom: 1rem; display: block; line-height: 1; }
+        .service-card h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--white); margin-bottom: 0.5rem; }
+        .service-card p { color: var(--grey); font-size: 0.88rem; line-height: 1.65; }
+        .card-arrow {
+            display: inline-flex; align-items: center; gap: 5px; margin-top: 1rem;
+            font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase; color: var(--red);
+            opacity: 0; transform: translateX(-6px);
+            transition: opacity var(--transition), transform var(--transition);
+        }
+        .service-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+        /* =============================================
+           TAPE DIVIDER
+        ============================================= */
+        .tape-divider {
+            height: 3px;
+            background: repeating-linear-gradient(90deg, var(--red) 0px, var(--red) 22px, transparent 22px, transparent 34px);
+            opacity: 0.5;
+        }
+
+        /* =============================================
+           FORM STYLES
+        ============================================= */
+        .form-container {
+            max-width: 480px; margin: 3rem auto; padding: 2.5rem;
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); box-shadow: var(--shadow-card);
+        }
+        .form-container h2 {
+            font-family: var(--font-display); font-size: 1.6rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--white);
+            margin-bottom: 0.4rem; text-align: center;
+        }
+        .form-subtitle { text-align: center; color: var(--grey); font-size: 0.88rem; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block; margin-bottom: 0.45rem; color: var(--grey-light);
+            font-family: var(--font-condensed); font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+        }
+        .form-group input, .form-group select {
+            width: 100%; padding: 0.8rem 1rem;
+            background: var(--black-mid); color: var(--white);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm);
+            font-family: var(--font-body); font-size: 0.95rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            appearance: none; -webkit-appearance: none;
+        }
+        .form-group input::placeholder { color: var(--grey); }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(215,38,56,0.15);
+        }
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 1rem center;
+            background-color: var(--black-mid); padding-right: 2.5rem; cursor: pointer;
+        }
+        .form-group select option { background: var(--black-mid); color: var(--white); }
+        .btn {
+            width: 100%; padding: 0.9rem; background: var(--red); color: var(--white);
+            border: 2px solid var(--red); border-radius: var(--radius-sm);
+            font-family: var(--font-condensed); font-size: 0.95rem; font-weight: 700;
+            letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+            transition: background var(--transition), color var(--transition), box-shadow var(--transition);
             margin-top: 0.5rem;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
-        }
-
+        .btn:hover { background: transparent; color: var(--red); box-shadow: var(--shadow-red); }
         .btn-voltar {
-            background: #6c757d;
+            background: transparent !important; color: var(--grey-light) !important;
+            border-color: rgba(255,255,255,0.15) !important; margin-top: 0.75rem !important;
         }
+        .btn-voltar:hover { border-color: var(--white) !important; color: var(--white) !important; box-shadow: none !important; }
+        .link-text { text-align: center; margin-top: 1.25rem; color: var(--grey); font-size: 0.88rem; }
+        .link-text a { color: var(--red); text-decoration: none; font-weight: 600; cursor: pointer; }
+        .link-text a:hover { opacity: 0.75; }
+        hr { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
+        .sobre-text { color: var(--grey-light); line-height: 1.8; font-size: 0.95rem; margin-bottom: 1rem; }
 
-        .link-text {
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .link-text a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .welcome-banner {
-            background: var(--gradient);
-            color: white;
-            padding: 1.5rem 2rem;
-            text-align: center;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-
+        /* =============================================
+           FOOTER
+        ============================================= */
         .footer {
-            background: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: auto;
+            background: var(--black-mid); border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--grey); padding: 1.1rem 2.5rem;
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+        }
+        .footer-logo { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--white); }
+        .footer-logo em { font-style: normal; color: var(--red); }
+        .footer-copy { font-size: 0.8rem; color: var(--grey); }
+        .footer-links { display: flex; gap: 1.5rem; }
+        .footer-links a {
+            color: var(--grey); text-decoration: none; font-family: var(--font-condensed);
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; transition: color var(--transition); cursor: pointer;
+        }
+        .footer-links a:hover { color: var(--red); }
+
+        /* =============================================
+           PAGE HEADER (seções internas)
+        ============================================= */
+        .page-header {
+            background: var(--black-mid); padding: 3rem 2rem 3.5rem;
+            position: relative; overflow: hidden; border-bottom: 1px solid rgba(215,38,56,0.15);
+        }
+        .page-header::before {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(-55deg, transparent, transparent 30px,
+                rgba(215, 38, 56, 0.025) 30px, rgba(215, 38, 56, 0.025) 31px);
+            pointer-events: none;
+        }
+        .page-header-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .page-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-family: var(--font-condensed); font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.15em; text-transform: uppercase; color: var(--red);
+            cursor: pointer; background: none; border: none; margin-bottom: 1rem;
+            transition: opacity var(--transition);
+        }
+        .page-back:hover { opacity: 0.7; }
+        .page-header h1 {
+            font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700; text-transform: uppercase; color: var(--white);
+            line-height: 1; margin-bottom: 0.5rem;
+        }
+        .page-header h1 em { font-style: normal; color: var(--red); }
+        .page-header p { color: var(--grey); font-size: 0.95rem; max-width: 500px; }
+
+        /* =============================================
+           ROUPAS — LAYOUT COM SIDEBAR
+        ============================================= */
+        .catalog-layout {
+            display: flex; max-width: 1200px; margin: 0 auto; padding: 2rem;
+            gap: 2rem; align-items: flex-start;
         }
 
-        hr {
-            margin: 20px 0;
-            border-color: #e0e0e0;
+        /* Sidebar */
+        .sidebar {
+            width: 240px; flex-shrink: 0; position: sticky; top: 90px;
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); overflow: hidden;
+        }
+        .sidebar-header {
+            background: var(--black-mid); padding: 1rem 1.25rem;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .sidebar-title {
+            font-family: var(--font-condensed); font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey-light);
+        }
+        .sidebar-hamburger {
+            display: none; background: none; border: none; cursor: pointer; color: var(--white);
+            font-size: 1.2rem;
+        }
+        .sidebar-body { padding: 1.25rem; }
+        .filter-group { margin-bottom: 1.5rem; }
+        .filter-group-title {
+            font-family: var(--font-condensed); font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--red);
+            margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px;
+        }
+        .filter-group-title::after { content: ''; flex: 1; height: 1px; background: rgba(215,38,56,0.2); }
+        .filter-btn {
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            background: none; border: none; padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm); cursor: pointer;
+            font-family: var(--font-body); font-size: 0.88rem; color: var(--grey-light);
+            transition: background var(--transition), color var(--transition);
+            text-align: left; margin-bottom: 2px;
+        }
+        .filter-btn:hover { background: var(--white-dim); color: var(--white); }
+        .filter-btn.active { background: rgba(215,38,56,0.15); color: var(--white); }
+        .filter-btn.active::before { content: ''; display: block; width: 3px; height: 3px; background: var(--red); border-radius: 50%; margin-right: -2px; }
+        .filter-count {
+            margin-left: auto; font-family: var(--font-condensed); font-size: 0.7rem;
+            background: var(--black-mid); color: var(--grey); padding: 1px 6px;
+            border-radius: 20px;
+        }
+
+        /* Catalog main */
+        .catalog-main { flex: 1; min-width: 0; }
+
+        .catalog-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .catalog-count { color: var(--grey); font-size: 0.88rem; }
+        .catalog-count strong { color: var(--white); font-family: var(--font-condensed); }
+
+        .sort-select {
+            background: var(--black-soft); color: var(--white); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-sm); padding: 0.4rem 0.8rem;
+            font-family: var(--font-condensed); font-size: 0.8rem;
+            cursor: pointer; appearance: none;
+        }
+
+        /* Trending badge */
+        .trending-section { margin-bottom: 2rem; }
+        .trending-label {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;
+            font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--red);
+        }
+        .trending-label::after { content: ''; flex: 1; height: 1px; background: rgba(215,38,56,0.25); }
+
+        /* Product cards grid */
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem;
+        }
+
+        .product-card {
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); overflow: hidden;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+            cursor: pointer;
+            display: flex; flex-direction: column;
+        }
+        .product-card:hover { border-color: rgba(215,38,56,0.3); transform: translateY(-4px); box-shadow: var(--shadow-card); }
+
+        .product-img-wrap {
+            aspect-ratio: 1/1; background: var(--black-mid);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .product-card:hover .product-img-wrap img { transform: scale(1.05); }
+        .product-img-placeholder { font-size: 3rem; opacity: 0.3; }
+
+        .product-badge {
+            position: absolute; top: 10px; left: 10px;
+            font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 2px;
+        }
+        .badge-hot { background: var(--red); color: #fff; }
+        .badge-new { background: #1a6b3c; color: #fff; }
+        .badge-trending { background: #7c4dff; color: #fff; }
+
+        .product-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+        .product-brand {
+            font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 3px;
+        }
+        .product-name {
+            font-family: var(--font-condensed); font-size: 1rem; font-weight: 700;
+            color: var(--white); margin-bottom: 0.4rem; line-height: 1.25;
+        }
+        .product-desc { color: var(--grey); font-size: 0.8rem; line-height: 1.55; margin-bottom: 0.75rem; flex: 1; }
+        .product-category-tag {
+            display: inline-block; font-family: var(--font-condensed); font-size: 0.65rem;
+            font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+            background: var(--white-dim); color: var(--grey-light); padding: 2px 8px; border-radius: 2px;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-links { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+        .product-link-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 0.45rem 0.75rem; border-radius: var(--radius-sm);
+            font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+            cursor: pointer; transition: background var(--transition), color var(--transition);
+            border: 1px solid rgba(215,38,56,0.3); color: var(--red); background: transparent;
+        }
+        .product-link-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+        .product-link-btn.store-btn {
+            border-color: rgba(255,255,255,0.12); color: var(--grey-light);
+        }
+        .product-link-btn.store-btn:hover { background: var(--white-dim); color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+        /* =============================================
+           SEÇÕES GENÉRICAS (Manobras, Equipamentos, etc.)
+        ============================================= */
+        .section-page { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+        .section-page-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .item-card {
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); padding: 1.5rem; cursor: pointer;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .item-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: var(--red); transform: scaleY(0); transform-origin: bottom;
+            transition: transform var(--transition);
+        }
+        .item-card:hover { border-color: rgba(215,38,56,0.25); transform: translateY(-3px); box-shadow: var(--shadow-card); }
+        .item-card:hover::before { transform: scaleY(1); }
+        .item-card-icon { font-size: 1.75rem; margin-bottom: 0.75rem; display: block; }
+        .item-card-level {
+            display: inline-block; font-family: var(--font-condensed); font-size: 0.62rem;
+            font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+            padding: 2px 8px; border-radius: 2px; margin-bottom: 0.5rem;
+        }
+        .level-iniciante { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .level-intermediario { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .level-avancado { background: rgba(215,38,56,0.15); color: var(--red); }
+        .level-todos { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+
+        .item-card h3 {
+            font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--white); margin-bottom: 0.4rem;
+        }
+        .item-card p { color: var(--grey); font-size: 0.85rem; line-height: 1.6; }
+        .item-card-meta {
+            margin-top: 1rem; display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-condensed); font-size: 0.7rem; color: var(--grey);
+            letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        .item-card-meta span { color: var(--red); }
+
+        /* Video card */
+        .video-card {
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); overflow: hidden;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+        }
+        .video-card:hover { border-color: rgba(215,38,56,0.3); transform: translateY(-4px); box-shadow: var(--shadow-card); }
+        .video-thumb {
+            aspect-ratio: 16/9; background: var(--black-mid); position: relative;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .video-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+        .video-play-btn {
+            position: absolute; width: 48px; height: 48px; background: rgba(215,38,56,0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: transform var(--transition), background var(--transition);
+        }
+        .video-card:hover .video-play-btn { transform: scale(1.1); background: var(--red); }
+        .video-placeholder { font-size: 2.5rem; opacity: 0.2; }
+        .video-info { padding: 1rem; }
+        .video-category {
+            font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin-bottom: 4px;
+        }
+        .video-title { font-family: var(--font-condensed); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .video-meta { font-size: 0.78rem; color: var(--grey); }
+
+        /* Pistas card */
+        .pista-card {
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: var(--radius-md); padding: 1.5rem;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+        }
+        .pista-card:hover { border-color: rgba(215,38,56,0.3); transform: translateY(-3px); box-shadow: var(--shadow-card); }
+        .pista-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; }
+        .pista-tipo {
+            font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.14em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px;
+        }
+        .pista-coberta { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .pista-livre { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .pista-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; text-transform: uppercase; color: var(--white); margin-bottom: 0.3rem; }
+        .pista-address { color: var(--grey); font-size: 0.82rem; margin-bottom: 0.75rem; }
+        .pista-rating { display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: #fbbf24; }
+        .pista-rating span { color: var(--grey); margin-left: 4px; }
+
+        /* =============================================
+           LOADING STATE
+        ============================================= */
+        .loading-state {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 4rem 2rem; color: var(--grey);
+            gap: 1rem;
+        }
+        .loader {
+            width: 36px; height: 36px; border: 3px solid rgba(215,38,56,0.2);
+            border-top-color: var(--red); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center; padding: 4rem 2rem; color: var(--grey);
+        }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+        .empty-state h3 { font-family: var(--font-display); font-size: 1.2rem; text-transform: uppercase; color: var(--grey-light); margin-bottom: 0.5rem; }
+
+        /* =============================================
+           PRODUTO DETAIL MODAL
+        ============================================= */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
+            padding: 2rem; opacity: 0; pointer-events: none;
+            transition: opacity var(--transition);
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: var(--black-soft); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-lg); padding: 2.5rem; max-width: 560px; width: 100%;
+            position: relative; transform: translateY(20px);
+            transition: transform var(--transition);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 1.25rem; right: 1.25rem;
+            background: none; border: none; color: var(--grey); font-size: 1.5rem;
+            cursor: pointer; transition: color var(--transition);
+        }
+        .modal-close:hover { color: var(--white); }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 900px) {
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .catalog-layout { flex-direction: column; }
+            .sidebar { width: 100%; position: static; }
+            .sidebar-hamburger { display: block; }
+            .sidebar-body { display: none; }
+            .sidebar-body.open { display: block; }
         }
 
         @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                text-align: center;
-            }
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .services {
-                grid-template-columns: 1fr;
-            }
+            .header { padding: 0 1.25rem; }
+            .nav-menu a, .nav-menu button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
+            .hero { padding: 3.5rem 1.25rem 5.5rem; }
+            .hero h1 { font-size: 2.6rem; }
+            .stat-divider { display: none; }
+            .services-section { padding: 3rem 1.25rem; }
+            .services-grid { grid-template-columns: 1fr; }
+            .catalog-layout { padding: 1rem; }
+            .section-page { padding: 1.5rem 1rem; }
+            .footer-inner { flex-direction: column; text-align: center; }
+            .footer-links { justify-content: center; }
         }
     </style>
 </head>
 <body>
+
     <!-- Header -->
     <header class="header">
         <nav class="nav-container">
@@ -274,385 +696,648 @@
         </nav>
     </header>
 
-    <!-- Conteúdo Principal -->
+    <!-- Main -->
     <main id="mainContent"></main>
+
+    <!-- Modal produto -->
+    <div class="modal-overlay" id="produtoModal" onclick="fecharModal(event)">
+        <div class="modal-box" id="modalBox">
+            <button class="modal-close" onclick="fecharModalDireto()">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Manual do Skatista © 2026 - Todos os direitos reservados</p>
+        <div class="footer-inner">
+            <div class="footer-logo"><em>Manual</em> do Skatista</div>
+            <span class="footer-copy">Manual do Skatista © 2026 — Todos os direitos reservados</span>
+            <div class="footer-links">
+                <a onclick="navegar('sobre')">Sobre</a>
+                <a onclick="navegar('login')">Entrar</a>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // ==================== CONFIGURAÇÃO ====================
-        const API_URL = 'http://localhost:3000';
-        let usuarioLogado = null;
+    // ==================== CONFIG ====================
+    const API_URL = 'http://localhost:3000';
+    let usuarioLogado = null;
+    let filtroRoupaAtivo = 'todos';
 
-        // Verificar se já está logado
-        const usuarioStorage = localStorage.getItem('usuario');
-        if (usuarioStorage) {
-            usuarioLogado = JSON.parse(usuarioStorage);
-        }
-
-        // ==================== INICIAR ====================
-        navegar('home');
-
-        // ==================== NAVEGAÇÃO ====================
-        function navegar(pagina) {
-            const main = document.getElementById('mainContent');
-            
-            switch(pagina) {
-                case 'home':
-                    if (usuarioLogado) {
-                        carregarHomeLogada();
-                    } else {
-                        carregarHomePublica();
-                    }
-                    break;
-                case 'login':
-                    carregarLogin();
-                    break;
-                case 'cadastro':
-                    carregarCadastro();
-                    break;
-                case 'sobre':
-                    carregarSobre();
-                    break;
-            }
-            
-            atualizarMenu();
-        }
-
-        function atualizarMenu() {
-            const menu = document.getElementById('navMenu');
-            
-            if (usuarioLogado) {
-                menu.innerHTML = `
-                    <a onclick="navegar('home')">Início</a>
-                    <a onclick="navegar('sobre')">Sobre Nós</a>
-                    <span style="color:white;">👤 ${usuarioLogado.nome}</span>
-                    <button class="btn-sair" onclick="logout()">Sair</button>
-                `;
-            } else {
-                menu.innerHTML = `
-                    <a onclick="navegar('home')">Início</a>
-                    <a onclick="navegar('sobre')">Sobre Nós</a>
-                    <a onclick="navegar('login')" class="btn-entrar">Entrar</a>
-                `;
-            }
-        }
-
-        // ==================== HOME PÚBLICA ====================
-        function carregarHomePublica() {
-            document.getElementById('mainContent').innerHTML = `
-                <section class="hero">
-                    <h1>Manual do Skatista</h1>
-                    <p>Seu guia completo para dominar o skate. Do iniciante ao avançado!</p>
-                </section>
-                <section class="services">
-                    <div class="service-card">
-                        <div class="service-icon">🛹</div>
-                        <h3>Manobras</h3>
-                        <p>Aprenda manobras do nível iniciante ao avançado.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">🔧</div>
-                        <h3>Montagem</h3>
-                        <p>Vídeos de montagem, manutenção e troca de peças.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">📍</div>
-                        <h3>Pistas</h3>
-                        <p>Melhores pistas próximas a você.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">⭐</div>
-                        <h3>Equipamentos</h3>
-                        <p>Melhores custo-benefício para performance.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">👕</div>
-                        <h3>Roupas</h3>
-                        <p>Conforto e estilo para andar de skate.</p>
-                    </div>
-                </section>
-            `;
-        }
-
-        // ==================== HOME LOGADA ====================
-        function carregarHomeLogada() {
-            document.getElementById('mainContent').innerHTML = `
-                <div class="welcome-banner">
-                    <h2>Bem-vindo, ${usuarioLogado.nome}! 🛹</h2>
-                    <p>Pronto para evoluir no skate hoje?</p>
-                </div>
-                <section class="services">
-                    <div class="service-card">
-                        <div class="service-icon">🛹</div>
-                        <h3>Manobras</h3>
-                        <p>Aprenda manobras do seu nível.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">🔧</div>
-                        <h3>Montagem</h3>
-                        <p>Vídeos e tutoriais completos.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">📍</div>
-                        <h3>Pistas</h3>
-                        <p>Encontre pistas próximas.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">⭐</div>
-                        <h3>Equipamentos</h3>
-                        <p>Melhores equipamentos.</p>
-                    </div>
-                    <div class="service-card">
-                        <div class="service-icon">👕</div>
-                        <h3>Roupas</h3>
-                        <p>Roupas e calçados ideais.</p>
-                    </div>
-                </section>
-            `;
-        }
-
-        // ==================== LOGIN ====================
-        function carregarLogin() {
-            document.getElementById('mainContent').innerHTML = `
-                <div class="form-container">
-                    <h2>🔑 Entrar</h2>
-                    <form onsubmit="fazerLogin(event)">
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="loginEmail" required placeholder="seu@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Senha</label>
-                            <input type="password" id="loginSenha" required placeholder="Sua senha">
-                        </div>
-                        <button type="submit" class="btn">Entrar</button>
-                    </form>
-                    <div class="link-text">
-                        Não tem conta? <a onclick="navegar('cadastro')">Cadastre-se</a>
-                    </div>
-                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
-                </div>
-            `;
-        }
-
-        async function fazerLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value.trim();
-    const senha = document.getElementById('loginSenha').value;
-    
-    console.log('🔑 Tentando login...');
-    console.log('Email:', email);
-    console.log('URL:', API_URL + '/login');
-    
-    // Verificar se o servidor está acessível primeiro
-    try {
-        const testResponse = await fetch(API_URL + '/tempos');
-        console.log('✅ Servidor acessível!');
-    } catch (error) {
-        console.error('❌ Servidor INACESSÍVEL!');
-        alert('❌ Servidor não está rodando!\n\nExecute: node index.js\nno terminal do VS Code');
-        return;
+    const usuarioStorage = localStorage.getItem('usuario');
+    if (usuarioStorage) {
+        try { usuarioLogado = JSON.parse(usuarioStorage); } catch(e) {}
     }
-    
-    try {
-        const response = await fetch(API_URL + '/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
-        });
-        
-        console.log('📥 Status:', response.status);
-        
-        const data = await response.json();
-        console.log('📦 Dados recebidos:', data);
-        
-        if (response.ok) {
-            // SALVAR usuário
-            usuarioLogado = data;
-            localStorage.setItem('usuario', JSON.stringify(data));
-            
-            console.log('✅ Login bem-sucedido!');
-            console.log('Usuário salvo:', usuarioLogado);
-            
-            // Mostrar mensagem e redirecionar
-            alert('✅ Login realizado com sucesso!');
-            navegar('home');
+
+    navegar('home');
+
+    // ==================== NAVEGAÇÃO ====================
+    function navegar(pagina) {
+        switch (pagina) {
+            case 'home':       usuarioLogado ? carregarHomeLogada() : carregarHomePublica(); break;
+            case 'login':      carregarLogin(); break;
+            case 'cadastro':   carregarCadastro(); break;
+            case 'sobre':      carregarSobre(); break;
+            case 'roupas':     carregarRoupas(); break;
+            case 'manobras':   carregarManobras(); break;
+            case 'montagem':   carregarMontagem(); break;
+            case 'pistas':     carregarPistas(); break;
+            case 'equipamentos': carregarEquipamentos(); break;
+            case 'videos':     carregarVideos(); break;
+        }
+        atualizarMenu();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function atualizarMenu() {
+        const menu = document.getElementById('navMenu');
+        if (usuarioLogado) {
+            menu.innerHTML = `
+                <a onclick="navegar('home')">Início</a>
+                <a onclick="navegar('sobre')">Sobre</a>
+                <span class="user-name">👤 ${usuarioLogado.nome}</span>
+                <button class="btn-sair" onclick="logout()">Sair</button>
+            `;
         } else {
-            alert('❌ ' + (data.erro || 'Email ou senha inválidos'));
+            menu.innerHTML = `
+                <a onclick="navegar('home')">Início</a>
+                <a onclick="navegar('sobre')">Sobre</a>
+                <a onclick="navegar('login')" class="btn-entrar">Entrar</a>
+            `;
         }
-        
-    } catch (error) {
-        console.error('❌ ERRO DETALHADO:', error);
-        alert('❌ Erro de conexão!\n\nVerifique se:\n1. Servidor está rodando (node index.js)\n2. URL está correta: ' + API_URL);
     }
-}
 
-        // ==================== CADASTRO ====================
-        async function carregarCadastro() {
-            document.getElementById('mainContent').innerHTML = `
-                <div class="form-container">
-                    <h2>📝 Criar Conta</h2>
-                    <form onsubmit="fazerCadastro(event)">
-                        <div class="form-group">
-                            <label>Nome Completo</label>
-                            <input type="text" id="cadNome" required placeholder="Seu nome completo">
+    // ==================== HOME PÚBLICA ====================
+    function carregarHomePublica() {
+        document.getElementById('mainContent').innerHTML = `
+            <section class="hero">
+                <div class="hero-eyebrow">Do iniciante ao avançado</div>
+                <h1>Manual do<br><em>Skatista</em></h1>
+                <p>Seu guia completo para dominar o skate. Aprenda manobras, monte seu setup e encontre as melhores pistas.</p>
+                <div class="hero-actions">
+                    <a class="btn-hero-primary" onclick="navegar('cadastro')">▶ Começar agora</a>
+                    <a class="btn-hero-secondary" onclick="navegar('login')">Já tenho conta</a>
+                </div>
+            </section>
+            ${renderStatStrip()}
+            ${renderServicesGrid()}
+            <div class="tape-divider"></div>
+        `;
+    }
+
+    // ==================== HOME LOGADA ====================
+    function carregarHomeLogada() {
+        document.getElementById('mainContent').innerHTML = `
+            <section class="welcome-banner">
+                <div class="hero-eyebrow">Bem-vindo de volta</div>
+                <h2>E aí, <em>${usuarioLogado.nome}</em>! 🛹</h2>
+                <p>Pronto para evoluir no skate hoje?</p>
+            </section>
+            ${renderStatStrip()}
+            ${renderServicesGrid()}
+            <div class="tape-divider"></div>
+        `;
+    }
+
+    function renderStatStrip() {
+        return `
+        <div class="stat-strip">
+            <div class="stat-strip-inner">
+                <div class="stat-item"><span class="stat-number">12K+</span><span class="stat-label">Skatistas</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number">340+</span><span class="stat-label">Manobras</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number">80+</span><span class="stat-label">Pistas mapeadas</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-number">100%</span><span class="stat-label">Gratuito</span></div>
+            </div>
+        </div>`;
+    }
+
+    function renderServicesGrid() {
+        const cards = [
+            { icon: '🛹', title: 'Manobras', desc: 'Do nível iniciante ao avançado, aprenda cada trick com tutoriais em vídeo.', fn: "navegar('manobras')", cta: 'Ver tudo' },
+            { icon: '🔧', title: 'Montagem', desc: 'Vídeos de montagem, manutenção e troca de peças do seu setup.', fn: "navegar('montagem')", cta: 'Ver tudo' },
+            { icon: '📍', title: 'Pistas', desc: 'Encontre as melhores pistas próximas a você no mapa interativo.', fn: "navegar('pistas')", cta: 'Ver mapa' },
+            { icon: '⭐', title: 'Equipamentos', desc: 'Melhores custo-benefício para cada estilo e nível de performance.', fn: "navegar('equipamentos')", cta: 'Ver tudo' },
+            { icon: '👕', title: 'Roupas', desc: 'Conforto e estilo para andar de skate com marcas que entendem a cultura.', fn: "navegar('roupas')", cta: 'Ver tudo' },
+            { icon: '🎥', title: 'Vídeos', desc: 'Coletâneas, edits e filmagens das melhores sessões da comunidade.', fn: "navegar('videos')", cta: 'Assistir' },
+        ];
+        return `
+        <section class="services-section">
+            <div class="section-label"><span>O que você encontra</span></div>
+            <h2 class="services-title">Tudo que você <em>precisa</em> na pista</h2>
+            <div class="services-grid">
+                ${cards.map(c => `
+                <div class="service-card" onclick="${c.fn}">
+                    <span class="service-icon">${c.icon}</span>
+                    <h3>${c.title}</h3>
+                    <p>${c.desc}</p>
+                    <div class="card-arrow">${c.cta} →</div>
+                </div>`).join('')}
+            </div>
+        </section>`;
+    }
+
+    // ==================== ROUPAS ====================
+    // Dados de exemplo (futuramente virão do banco "roupas" / "catalogo_roupas")
+    const ROUPAS_DEMO = [
+        { id:1, marca:'Thrasher', nome:'Camiseta Flame Logo', categoria:'camiseta', desc:'Algodão pesado, gola careca, fit relaxado. Ícone da cultura skate desde 1981.', imagem:null, badge:'hot', uso_count:847, lojas_online:[{nome:'Thrasher Store', url:'https://thrashermagazine.com'}], lojas_fisicas:'Skate shops em São Paulo e Rio de Janeiro' },
+        { id:2, marca:'Vans', nome:'SK8-Hi MTE-2', categoria:'tenis', desc:'Cano alto com forro de lã sintética. Impermeável e com sola vulcanizada para grip máximo.', imagem:null, badge:'trending', uso_count:612, lojas_online:[{nome:'Vans Brasil', url:'https://vans.com.br'}], lojas_fisicas:'Lojas Vans e Centauro em todo Brasil' },
+        { id:3, marca:'Dickies', nome:'Calça 874 Original', categoria:'calca', desc:'Calça de trabalho que virou uniforme do skate. Durável, resistente e com fit que permite movimento total.', imagem:null, badge:'hot', uso_count:534, lojas_online:[{nome:'Dickies Store', url:'https://dickies.com.br'}], lojas_fisicas:'Skate shops selecionadas' },
+        { id:4, marca:'Huf', nome:'Plantlife Crew Moletom', categoria:'moletom', desc:'Moletom de fio 100% algodão, interior felpudo. Estampa discreta, uso no dia a dia ou na pista.', imagem:null, badge:'new', uso_count:289, lojas_online:[{nome:'Huf Worldwide', url:'https://hufworldwide.com'}], lojas_fisicas:'Lojas multimarcas streetwear' },
+        { id:5, marca:'Nike SB', nome:'Dunk Low Pro', categoria:'tenis', desc:'Amortecimento Zoom Air no calcanhar. Palmilha SB para impacto de tricks. Clássico reinventado para o skate.', imagem:null, badge:'trending', uso_count:923, lojas_online:[{nome:'Nike SB', url:'https://nike.com.br/skateboarding'}], lojas_fisicas:'Nike Factory e lojas parceiras' },
+        { id:6, marca:'Volcom', nome:'Shorts Frickin Chino', categoria:'short', desc:'Short chino de algodão Frickin™, stretch 4-way. Bolsos funcionais e patch bordado característico.', imagem:null, badge:null, uso_count:198, lojas_online:[{nome:'Volcom Store', url:'https://volcom.com.br'}], lojas_fisicas:'Lojas Volcom e multimarcas surf/skate' },
+        { id:7, marca:'New Era', nome:'Boné 9FORTY Skate', categoria:'acessorio', desc:'Estrutura unstructured de 6 painéis. Aba curva, fechamento snapback. Colaborações exclusivas com marcas skate.', imagem:null, badge:null, uso_count:156, lojas_online:[{nome:'New Era Cap', url:'https://neweracap.com.br'}], lojas_fisicas:'Quiosques New Era em shoppings' },
+        { id:8, marca:'Independent', nome:'Camiseta Bar/Shield', categoria:'camiseta', desc:'A camiseta da marca de trucks mais usada no mundo. Estampa tradicional, algodão 100%.', imagem:null, badge:null, uso_count:445, lojas_online:[{nome:'Indy Trucks', url:'https://independenttrucks.com'}], lojas_fisicas:'Skate shops autorizadas' },
+    ];
+
+    const CATEGORIAS_ROUPAS = [
+        { key:'todos', label:'Tudo', icon:'👁️' },
+        { key:'camiseta', label:'Camisetas', icon:'👕' },
+        { key:'short', label:'Shorts', icon:'🩳' },
+        { key:'calca', label:'Calças', icon:'👖' },
+        { key:'moletom', label:'Moletons', icon:'🧥' },
+        { key:'tenis', label:'Tênis', icon:'👟' },
+        { key:'acessorio', label:'Acessórios', icon:'🧢' },
+    ];
+
+    function carregarRoupas() {
+        filtroRoupaAtivo = 'todos';
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>👕 <em>Roupas</em></h1>
+                    <p>As marcas que entendem a cultura. Estilo e conforto para você arrasar na pista.</p>
+                </div>
+            </div>
+            <div class="catalog-layout">
+                ${renderSidebarRoupas()}
+                <div class="catalog-main" id="catalogMain">
+                    ${renderCatalogoRoupas('todos')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSidebarRoupas() {
+        const counts = {};
+        ROUPAS_DEMO.forEach(r => { counts[r.categoria] = (counts[r.categoria] || 0) + 1; });
+        const totalCount = ROUPAS_DEMO.length;
+
+        return `
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">☰ Filtros</span>
+                <button class="sidebar-hamburger" onclick="toggleSidebar()">☰</button>
+            </div>
+            <div class="sidebar-body" id="sidebarBody">
+                <div class="filter-group">
+                    <div class="filter-group-title">Categoria</div>
+                    ${CATEGORIAS_ROUPAS.map(cat => `
+                    <button class="filter-btn ${filtroRoupaAtivo === cat.key ? 'active' : ''}"
+                        onclick="filtrarRoupas('${cat.key}')">
+                        ${cat.icon} ${cat.label}
+                        <span class="filter-count">${cat.key === 'todos' ? totalCount : (counts[cat.key] || 0)}</span>
+                    </button>`).join('')}
+                </div>
+            </div>
+        </aside>`;
+    }
+
+    function toggleSidebar() {
+        const body = document.getElementById('sidebarBody');
+        body.classList.toggle('open');
+    }
+
+    function filtrarRoupas(categoria) {
+        filtroRoupaAtivo = categoria;
+        // Re-renderiza a sidebar com filtro ativo
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.outerHTML = renderSidebarRoupas();
+        // Atualiza grid
+        document.getElementById('catalogMain').innerHTML = renderCatalogoRoupas(categoria);
+        // Re-bind sidebar
+        document.querySelector('.sidebar').outerHTML = renderSidebarRoupas();
+        const layout = document.querySelector('.catalog-layout');
+        if (layout) {
+            layout.querySelector('.sidebar').outerHTML = renderSidebarRoupas();
+        }
+    }
+
+    function renderCatalogoRoupas(filtro) {
+        let lista = [...ROUPAS_DEMO];
+        if (filtro !== 'todos') {
+            lista = lista.filter(r => r.categoria === filtro);
+        }
+
+        // Trending primeiro
+        const trending = lista.filter(r => r.badge === 'hot' || r.badge === 'trending').sort((a,b) => b.uso_count - a.uso_count);
+        const resto = lista.filter(r => !r.badge || (r.badge !== 'hot' && r.badge !== 'trending'));
+
+        if (lista.length === 0) {
+            return `<div class="empty-state"><div class="empty-state-icon">🔍</div><h3>Nenhuma peça encontrada</h3><p style="color:var(--grey)">Tente outro filtro</p></div>`;
+        }
+
+        let html = `
+        <div class="catalog-toolbar">
+            <span class="catalog-count"><strong>${lista.length}</strong> peças encontradas</span>
+        </div>`;
+
+        if (trending.length > 0 && filtro === 'todos') {
+            html += `
+            <div class="trending-section">
+                <div class="trending-label">🔥 Mais usadas pelos skatistas</div>
+                <div class="products-grid">${trending.map(r => renderProductCard(r)).join('')}</div>
+            </div>
+            <div class="trending-label" style="margin:1.5rem 0 1rem">Todas as peças</div>
+            <div class="products-grid">${resto.map(r => renderProductCard(r)).join('')}</div>`;
+        } else {
+            html += `<div class="products-grid">${lista.map(r => renderProductCard(r)).join('')}</div>`;
+        }
+
+        return html;
+    }
+
+    function renderProductCard(r) {
+        const badgeMap = { hot: 'badge-hot', new: 'badge-new', trending: 'badge-trending' };
+        const badgeLabelMap = { hot: '🔥 Febres', new: '✨ Novo', trending: '📈 Trending' };
+        return `
+        <div class="product-card" onclick="abrirProduto(${r.id})">
+            <div class="product-img-wrap">
+                ${r.imagem ? `<img src="${r.imagem}" alt="${r.nome}" loading="lazy">` : `<div class="product-img-placeholder">👕</div>`}
+                ${r.badge ? `<div class="product-badge ${badgeMap[r.badge]}">${badgeLabelMap[r.badge]}</div>` : ''}
+            </div>
+            <div class="product-info">
+                <div class="product-brand">${r.marca}</div>
+                <div class="product-name">${r.nome}</div>
+                <div class="product-category-tag">${CATEGORIAS_ROUPAS.find(c=>c.key===r.categoria)?.label || r.categoria}</div>
+                <div class="product-desc">${r.desc}</div>
+                <div class="product-links">
+                    ${r.lojas_online.map(l => `<a class="product-link-btn" href="${l.url}" target="_blank" rel="noopener">🛒 ${l.nome}</a>`).join('')}
+                    <button class="product-link-btn store-btn" onclick="event.stopPropagation(); abrirProduto(${r.id})">📍 Lojas físicas</button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function abrirProduto(id) {
+        const r = ROUPAS_DEMO.find(x => x.id === id);
+        if (!r) return;
+        document.getElementById('modalContent').innerHTML = `
+            <div class="product-brand" style="font-size:0.8rem;margin-bottom:4px">${r.marca}</div>
+            <h2 style="font-family:var(--font-display);font-size:1.6rem;font-weight:700;text-transform:uppercase;color:var(--white);margin-bottom:1rem">${r.nome}</h2>
+            <div class="product-category-tag" style="margin-bottom:1rem">${CATEGORIAS_ROUPAS.find(c=>c.key===r.categoria)?.label || r.categoria}</div>
+            <p style="color:var(--grey-light);font-size:0.95rem;line-height:1.7;margin-bottom:1.5rem">${r.desc}</p>
+            <div style="background:var(--black-mid);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem">
+                <div style="font-family:var(--font-condensed);font-size:0.68rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-bottom:0.5rem">📍 Onde encontrar fisicamente</div>
+                <p style="color:var(--grey-light);font-size:0.88rem">${r.lojas_fisicas}</p>
+            </div>
+            <div style="font-family:var(--font-condensed);font-size:0.68rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--grey);margin-bottom:0.75rem">🛒 Lojas online</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+                ${r.lojas_online.map(l => `<a class="product-link-btn" href="${l.url}" target="_blank" rel="noopener" style="text-align:center;justify-content:center">Ir para ${l.nome} →</a>`).join('')}
+            </div>
+            <div style="margin-top:1rem;font-family:var(--font-condensed);font-size:0.72rem;color:var(--grey);text-align:center">
+                👥 ${r.uso_count.toLocaleString('pt-BR')} skatistas usam essa peça
+            </div>
+        `;
+        document.getElementById('produtoModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModal(e) {
+        if (e.target === document.getElementById('produtoModal')) fecharModalDireto();
+    }
+    function fecharModalDireto() {
+        document.getElementById('produtoModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // ==================== MANOBRAS ====================
+    const MANOBRAS_DEMO = [
+        { id:1, nome:'Ollie', nivel:'iniciante', desc:'A base de tudo. Salto sem usar as mãos que é pré-requisito para praticamente qualquer outra manobra.', duracao:'2-4 semanas', icon:'🛹' },
+        { id:2, nome:'Kickflip', nivel:'iniciante', desc:'Rotação do shape 360° no eixo longitudinal com flip do pé dianteiro. O trick mais icônico do street skate.', duracao:'1-3 meses', icon:'🔄' },
+        { id:3, nome:'Heelflip', nivel:'intermediario', desc:'Flip no sentido oposto ao kickflip. Raspagem do calcanhar para baixo e para fora no nose.', duracao:'1-2 meses após kickflip', icon:'↩️' },
+        { id:4, nome:'360 Flip (Tre Flip)', nivel:'intermediario', desc:'Combinação de kickflip com 360 shuvit. Uma das manobras mais estéticas do skate de rua.', duracao:'3-6 meses', icon:'⚡' },
+        { id:5, nome:'Hardflip', nivel:'avancado', desc:'Frontside pop shuvit combinado com kickflip. Exige timing preciso e é raro de se ver bem feito.', duracao:'6+ meses', icon:'💥' },
+        { id:6, nome:'Laser Flip', nivel:'avancado', desc:'Heelflip com 360 frontside shuvit. Considerada uma das manobras mais difíceis do skate moderno.', duracao:'1+ ano', icon:'🔥' },
+    ];
+
+    function carregarManobras() {
+        const nivelMap = { iniciante: 'level-iniciante', intermediario: 'level-intermediario', avancado: 'level-avancado' };
+        const nivelLabel = { iniciante: '🟢 Iniciante', intermediario: '🟡 Intermediário', avancado: '🔴 Avançado' };
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>🛹 <em>Manobras</em></h1>
+                    <p>Do iniciante ao avançado, aprenda cada trick com tutoriais em vídeo. ${MANOBRAS_DEMO.length} manobras catalogadas.</p>
+                </div>
+            </div>
+            <div class="section-page">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem">
+                    <button class="filter-btn active" onclick="filtrarManobras('todos',this)" style="background:rgba(215,38,56,0.15);color:var(--white)">Todos</button>
+                    <button class="filter-btn" onclick="filtrarManobras('iniciante',this)">🟢 Iniciante</button>
+                    <button class="filter-btn" onclick="filtrarManobras('intermediario',this)">🟡 Intermediário</button>
+                    <button class="filter-btn" onclick="filtrarManobras('avancado',this)">🔴 Avançado</button>
+                </div>
+                <div class="section-page-grid" id="manobraGrid">
+                    ${MANOBRAS_DEMO.map(m => `
+                    <div class="item-card" data-nivel="${m.nivel}">
+                        <span class="item-card-icon">${m.icon}</span>
+                        <div class="item-card-level ${nivelMap[m.nivel]}">${nivelLabel[m.nivel]}</div>
+                        <h3>${m.nome}</h3>
+                        <p>${m.desc}</p>
+                        <div class="item-card-meta">⏱ Tempo estimado: <span>${m.duracao}</span></div>
+                    </div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function filtrarManobras(nivel, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => { b.style.background=''; b.style.color='var(--grey-light)'; });
+        btn.style.background = 'rgba(215,38,56,0.15)'; btn.style.color = 'var(--white)';
+        document.querySelectorAll('#manobraGrid .item-card').forEach(card => {
+            card.style.display = (nivel === 'todos' || card.dataset.nivel === nivel) ? '' : 'none';
+        });
+    }
+
+    // ==================== MONTAGEM ====================
+    const MONTAGEM_DEMO = [
+        { id:1, nome:'Como montar seu skate do zero', categoria:'montagem', desc:'Guia completo: shape, truck, rodas, rolamentos e grip. Do zero ao pronto em 30 minutos.', icon:'🛹', duracao:'30 min' },
+        { id:2, nome:'Troca de rolamentos', categoria:'manutencao', desc:'Quando e como trocar os rolamentos. Limpeza, lubrificação e dicas para prolongar a vida útil.', icon:'🔩', duracao:'15 min' },
+        { id:3, nome:'Regulagem de trucks', categoria:'manutencao', desc:'Trucks mais duros ou mais soltos? Como ajustar o kingpin para seu estilo de andar.', icon:'🔧', duracao:'10 min' },
+        { id:4, nome:'Aplicação do grip tape', categoria:'montagem', desc:'Técnica correta para aplicar sem bolhas. Como furar os buracos e acabamento nas bordas.', icon:'🪛', duracao:'20 min' },
+        { id:5, nome:'Escolhendo o tamanho do shape', categoria:'guia', desc:'Largura x estilo x tamanho do pé. Guia definitivo para não errar na hora de comprar.', icon:'📐', duracao:'Leitura' },
+        { id:6, nome:'Setup de street vs. bowl', categoria:'guia', desc:'As diferenças de configuração para pista de rua versus bowl. Rodas, trucks e dureza.', icon:'⚙️', duracao:'Leitura' },
+    ];
+
+    function carregarMontagem() {
+        const catLabel = { montagem:'Montagem', manutencao:'Manutenção', guia:'Guia' };
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>🔧 <em>Montagem</em></h1>
+                    <p>Vídeos de montagem, manutenção e troca de peças do seu setup.</p>
+                </div>
+            </div>
+            <div class="section-page">
+                <div class="section-page-grid">
+                    ${MONTAGEM_DEMO.map(m => `
+                    <div class="item-card">
+                        <span class="item-card-icon">${m.icon}</span>
+                        <div class="item-card-level level-todos">${catLabel[m.categoria] || m.categoria}</div>
+                        <h3>${m.nome}</h3>
+                        <p>${m.desc}</p>
+                        <div class="item-card-meta">⏱ <span>${m.duracao}</span></div>
+                    </div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== PISTAS ====================
+    const PISTAS_DEMO = [
+        { id:1, nome:'Pista do Ibirapuera', tipo:'livre', address:'Av. Pedro Álvares Cabral, São Paulo - SP', rating:4.8, avaliacoes:312, desc:'Pista pública com bowl, corrimão e manual pad. Comunidade ativa nos fins de semana.' },
+        { id:2, nome:'Skate Park da Vila Leopoldina', tipo:'coberta', address:'Rua Guaicurus, São Paulo - SP', rating:4.6, avaliacoes:187, desc:'Coberta com iluminação noturna. Open daily. Deck de madeira e obstáculos de concreto.' },
+        { id:3, nome:'Pista da Orla de Santos', tipo:'livre', address:'Av. Bartolomeu de Gusmão, Santos - SP', rating:4.5, avaliacoes:98, desc:'Vista para o mar, sessões iradas ao entardecer. Ideal para quem curte andar ao ar livre.' },
+        { id:4, nome:'SkatePark Interlagos', tipo:'coberta', address:'Av. Interlagos, São Paulo - SP', rating:4.3, avaliacoes:145, desc:'Grande infraestrutura com bowl de 4m, corrimões de diferentes alturas e hip.' },
+    ];
+
+    function carregarPistas() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>📍 <em>Pistas</em></h1>
+                    <p>Encontre as melhores pistas próximas a você. ${PISTAS_DEMO.length} pistas mapeadas.</p>
+                </div>
+            </div>
+            <div class="section-page">
+                <div style="background:var(--black-soft);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-md);padding:2rem;margin-bottom:2rem;text-align:center;opacity:0.7">
+                    <div style="font-size:2rem;margin-bottom:0.5rem">🗺️</div>
+                    <div style="font-family:var(--font-condensed);font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:0.25rem">Em breve</div>
+                    <p style="color:var(--grey);font-size:0.88rem">Mapa interativo com geolocalização</p>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
+                    ${PISTAS_DEMO.map(p => `
+                    <div class="pista-card">
+                        <div class="pista-card-top">
+                            <div>
+                                <div class="pista-name">${p.nome}</div>
+                                <div class="pista-address">📌 ${p.address}</div>
+                            </div>
+                            <div class="pista-tipo ${p.tipo === 'coberta' ? 'pista-coberta' : 'pista-livre'}">${p.tipo}</div>
                         </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="cadEmail" required placeholder="seu@email.com">
+                        <p style="color:var(--grey);font-size:0.83rem;margin-bottom:0.75rem">${p.desc}</p>
+                        <div class="pista-rating">
+                            ${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}
+                            <strong style="color:var(--white)">${p.rating}</strong>
+                            <span>(${p.avaliacoes} avaliações)</span>
                         </div>
-                        <div class="form-group">
-                            <label>Senha</label>
-                            <input type="password" id="cadSenha" required placeholder="Crie uma senha">
+                    </div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== EQUIPAMENTOS ====================
+    const EQUIPAMENTOS_DEMO = [
+        { id:1, nome:'Shape Powell Peralta', categoria:'Shape', nivel:'todos', desc:'8.0" de largura, maple canadense de 7 camadas. Durável e com pop excepcional.', icon:'🛹', preco_ref:'R$ 220–350' },
+        { id:2, nome:'Truck Independent 149', categoria:'Truck', nivel:'todos', desc:'O truck mais vendido do mundo. Pivot de aço forjado, geometria comprovada no street e bowl.', icon:'🔩', preco_ref:'R$ 180–280 (par)' },
+        { id:3, nome:'Roda Spitfire Formula Four', categoria:'Roda', nivel:'intermediario', desc:'99A de dureza, núcleo de poliuretano. Zero flat spots. A escolha dos pros.', icon:'⚙️', preco_ref:'R$ 180–250 (kit)' },
+        { id:4, nome:'Rolamento Bones Reds', categoria:'Rolamento', nivel:'iniciante', desc:'O custo-benefício perfeito. Chrome steel, pre-lubed, dura muito mais que a concorrência no mesmo preço.', icon:'🎯', preco_ref:'R$ 60–90 (kit 8)' },
+        { id:5, nome:'Grip Jessup UltraGrip', categoria:'Grip', nivel:'iniciante', desc:'Granulação grossa, aderência máxima. A escolha de 90% dos profissionais de street.', icon:'📌', preco_ref:'R$ 25–45' },
+        { id:6, nome:'Shape Santa Cruz VX', categoria:'Shape', nivel:'avancado', desc:'Tecnologia VX: fibra de carbono entre os núcleos de maple. 30% mais pop e durabilidade superior.', icon:'🚀', preco_ref:'R$ 350–500' },
+    ];
+
+    function carregarEquipamentos() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>⭐ <em>Equipamentos</em></h1>
+                    <p>Melhores custo-benefício para cada estilo e nível de performance.</p>
+                </div>
+            </div>
+            <div class="section-page">
+                <div class="section-page-grid">
+                    ${EQUIPAMENTOS_DEMO.map(e => `
+                    <div class="item-card">
+                        <span class="item-card-icon">${e.icon}</span>
+                        <div style="display:flex;gap:6px;align-items:center;margin-bottom:0.5rem">
+                            <div class="item-card-level level-todos">${e.categoria}</div>
+                            <div class="item-card-level ${e.nivel === 'iniciante' ? 'level-iniciante' : e.nivel === 'avancado' ? 'level-avancado' : 'level-intermediario'}">${e.nivel}</div>
                         </div>
-                        <div class="form-group">
-                            <label>Confirmar Senha</label>
-                            <input type="password" id="cadConfirmarSenha" required placeholder="Confirme sua senha">
+                        <h3>${e.nome}</h3>
+                        <p>${e.desc}</p>
+                        <div class="item-card-meta">💰 Referência: <span>${e.preco_ref}</span></div>
+                    </div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== VÍDEOS ====================
+    const VIDEOS_DEMO = [
+        { id:1, titulo:'Ollie do Zero — Tutorial Completo', categoria:'Tutorial', canal:'Manual do Skatista', duracao:'8:42', thumbnail:null },
+        { id:2, titulo:'Sessão no Ibirapuera | Edit HD', categoria:'Edit', canal:'SP Skate Crew', duracao:'3:15', thumbnail:null },
+        { id:3, titulo:'Como fazer Kickflip — Passo a Passo', categoria:'Tutorial', canal:'Manual do Skatista', duracao:'11:20', thumbnail:null },
+        { id:4, titulo:'Street Session São Paulo 2026', categoria:'Edit', canal:'StreetBR', duracao:'5:08', thumbnail:null },
+        { id:5, titulo:'Campeonato Street SP — Melhores Momentos', categoria:'Evento', canal:'SkateTV Brasil', duracao:'15:44', thumbnail:null },
+        { id:6, titulo:'Hardflip Tutorial — nível avançado', categoria:'Tutorial', canal:'Manual do Skatista', duracao:'9:33', thumbnail:null },
+    ];
+
+    function carregarVideos() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div class="page-header-inner">
+                    <button class="page-back" onclick="navegar('home')">← Voltar</button>
+                    <h1>🎥 <em>Vídeos</em></h1>
+                    <p>Coletâneas, edits e filmagens das melhores sessões da comunidade.</p>
+                </div>
+            </div>
+            <div class="section-page">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem">
+                    ${VIDEOS_DEMO.map(v => `
+                    <div class="video-card">
+                        <div class="video-thumb">
+                            ${v.thumbnail ? `<img class="video-thumb-img" src="${v.thumbnail}" alt="${v.titulo}">` : `<div class="video-placeholder">🎬</div>`}
+                            <div class="video-play-btn">▶</div>
                         </div>
-                        
-                        <hr>
-                        <h3 style="text-align:center; color: var(--dark);">🎯 Perfil do Skatista</h3>
-                        
-                        <div class="form-group">
-                            <label>Há quanto tempo anda de skate?</label>
-                            <select id="cadTempo" required>
-                                <option value="">Carregando...</option>
-                            </select>
+                        <div class="video-info">
+                            <div class="video-category">${v.categoria}</div>
+                            <div class="video-title">${v.titulo}</div>
+                            <div class="video-meta">📺 ${v.canal} • ⏱ ${v.duracao}</div>
                         </div>
-                        <div class="form-group">
-                            <label>Nível no skate</label>
-                            <select id="cadNivel" required>
-                                <option value="">Carregando...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Objetivo no skate</label>
-                            <select id="cadObjetivo" required>
-                                <option value="">Carregando...</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn">Criar Conta</button>
-                    </form>
-                    <div class="link-text">
-                        Já tem conta? <a onclick="navegar('login')">Faça login</a>
+                    </div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== LOGIN ====================
+    async function fazerLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const senha = document.getElementById('loginSenha').value;
+        try {
+            const res = await fetch(API_URL + '/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                usuarioLogado = data;
+                localStorage.setItem('usuario', JSON.stringify(data));
+                navegar('home');
+            } else {
+                alert('❌ ' + (data.erro || 'Credenciais inválidas'));
+            }
+        } catch(e) {
+            alert('❌ Erro de conexão com o servidor!');
+        }
+    }
+
+    function carregarLogin() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="form-container">
+                <h2>🛹 Entrar</h2>
+                <p class="form-subtitle">Acesse sua conta</p>
+                <form onsubmit="fazerLogin(event)">
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" required>
                     </div>
-                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
-                </div>
-            `;
-            
-            // Carregar opções dos selects
-            carregarOpcoes();
-        }
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="loginSenha" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn">Entrar</button>
+                </form>
+                <div class="link-text">Não tem conta? <a onclick="navegar('cadastro')">Criar conta grátis</a></div>
+                <button class="btn btn-voltar" onclick="navegar('home')">← Voltar</button>
+            </div>
+        `;
+    }
 
-        async function carregarOpcoes() {
-            try {
-                // Tempos
-                const respTempo = await fetch(API_URL + '/tempos');
-                const tempos = await respTempo.json();
-                const selTempo = document.getElementById('cadTempo');
-                selTempo.innerHTML = '<option value="">Selecione...</option>';
-                tempos.forEach(t => {
-                    selTempo.innerHTML += `<option value="${t.id}">${t.descricao}</option>`;
-                });
-                
-                // Níveis
-                const respNivel = await fetch(API_URL + '/niveis');
-                const niveis = await respNivel.json();
-                const selNivel = document.getElementById('cadNivel');
-                selNivel.innerHTML = '<option value="">Selecione...</option>';
-                niveis.forEach(n => {
-                    selNivel.innerHTML += `<option value="${n.id}">${n.descricao}</option>`;
-                });
-                
-                // Objetivos
-                const respObj = await fetch(API_URL + '/objetivos');
-                const objetivos = await respObj.json();
-                const selObj = document.getElementById('cadObjetivo');
-                selObj.innerHTML = '<option value="">Selecione...</option>';
-                objetivos.forEach(o => {
-                    selObj.innerHTML += `<option value="${o.id}">${o.descricao}</option>`;
-                });
-                
-                console.log('✅ Opções carregadas!');
-            } catch (error) {
-                console.error('❌ Erro ao carregar opções:', error);
-            }
-        }
+    // ==================== CADASTRO ====================
+    async function carregarCadastro() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="form-container">
+                <h2>🛹 Criar Conta</h2>
+                <p class="form-subtitle">É grátis e rápido</p>
+                <form onsubmit="fazerCadastro(event)">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="cadNome" placeholder="Seu nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="cadEmail" placeholder="seu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar senha</label>
+                        <input type="password" id="cadConfirmarSenha" placeholder="Repita a senha" required>
+                    </div>
+                    <button type="submit" class="btn">Criar conta</button>
+                </form>
+                <div class="link-text">Já tem conta? <a onclick="navegar('login')">Entrar</a></div>
+                <button class="btn btn-voltar" onclick="navegar('home')">← Voltar</button>
+            </div>
+        `;
+    }
 
-        async function fazerCadastro(event) {
-            event.preventDefault();
-            
-            const nome = document.getElementById('cadNome').value;
-            const email = document.getElementById('cadEmail').value;
-            const senha = document.getElementById('cadSenha').value;
-            const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
-            
-            console.log('📝 Cadastro:', { nome, email });
-            
-            // Validações
-            if (senha !== confirmarSenha) {
-                alert('❌ As senhas não coincidem!');
-                return;
-            }
-            
-            if (senha.length < 6) {
-                alert('❌ Senha deve ter no mínimo 6 caracteres!');
-                return;
-            }
-            
-            try {
-                const response = await fetch(API_URL + '/usuarios', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome, email, senha })
-                });
-                
-                const data = await response.json();
-                console.log('Resposta:', data);
-                
-                if (response.ok) {
-                    alert('✅ Conta criada com sucesso! Faça login.');
-                    navegar('login');
-                } else {
-                    alert('❌ ' + (data.erro || 'Erro ao cadastrar'));
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('❌ Erro de conexão com o servidor!');
-            }
+    async function fazerCadastro(event) {
+        event.preventDefault();
+        const nome = document.getElementById('cadNome').value;
+        const email = document.getElementById('cadEmail').value;
+        const senha = document.getElementById('cadSenha').value;
+        const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
+        if (senha !== confirmarSenha) { alert('❌ As senhas não coincidem!'); return; }
+        if (senha.length < 6) { alert('❌ Senha deve ter no mínimo 6 caracteres!'); return; }
+        try {
+            const res = await fetch(API_URL + '/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, senha })
+            });
+            const data = await res.json();
+            if (res.ok) { alert('✅ Conta criada! Faça login.'); navegar('login'); }
+            else { alert('❌ ' + (data.erro || 'Erro ao cadastrar')); }
+        } catch(e) {
+            alert('❌ Erro de conexão com o servidor!');
         }
+    }
 
-        // ==================== SOBRE ====================
-        function carregarSobre() {
-            document.getElementById('mainContent').innerHTML = `
-                <div class="form-container">
-                    <h2>📖 Sobre Nós</h2>
-                    <p style="line-height: 1.8; color: #555;">
-                        O Manual do Skatista é um projeto de TCC desenvolvido para ajudar skatistas 
-                        de todos os níveis a evoluir no esporte.
-                    </p>
-                    <p style="line-height: 1.8; color: #555; margin-top: 1rem;">
-                        Nossa missão é fornecer conteúdo de qualidade sobre manobras, equipamentos, 
-                        pistas e tudo relacionado ao universo do skate.
-                    </p>
-                    <button class="btn btn-voltar" onclick="navegar('home')">Voltar</button>
-                </div>
-            `;
-        }
+    // ==================== SOBRE ====================
+    function carregarSobre() {
+        document.getElementById('mainContent').innerHTML = `
+            <div class="form-container">
+                <h2>Sobre Nós</h2>
+                <p class="form-subtitle">Conheça o projeto</p>
+                <p class="sobre-text">O Manual do Skatista é um projeto de TCC desenvolvido para ajudar skatistas de todos os níveis a evoluir no esporte.</p>
+                <p class="sobre-text">Nossa missão é fornecer conteúdo de qualidade sobre manobras, equipamentos, pistas e tudo relacionado ao universo do skate.</p>
+                <button class="btn btn-voltar" onclick="navegar('home')">← Voltar</button>
+            </div>
+        `;
+    }
 
-        // ==================== LOGOUT ====================
-        function logout() {
-            usuarioLogado = null;
-            localStorage.removeItem('usuario');
-            alert('👋 Até logo!');
-            navegar('home');
-        }
+    // ==================== LOGOUT ====================
+    function logout() {
+        usuarioLogado = null;
+        localStorage.removeItem('usuario');
+        navegar('home');
+    }
     </script>
 </body>
 </html>
