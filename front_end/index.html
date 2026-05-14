@@ -1268,6 +1268,22 @@
 
     // ==================== CADASTRO ====================
     async function carregarCadastro() {
+    try {
+        const res = await fetch(API_URL + '/opcoes-cadastro');
+        const opcoes = await res.json();
+
+        let niveisHTML = opcoes.niveis.map(n => 
+            `<option value="${n.id}">${n.descricao}</option>`
+        ).join('');
+
+        let objetivosHTML = opcoes.objetivos.map(o => 
+            `<option value="${o.id}">${o.descricao}</option>`
+        ).join('');
+
+        let temposHTML = opcoes.tempos.map(t => 
+            `<option value="${t.id}">${t.descricao}</option>`
+        ).join('');
+
         document.getElementById('mainContent').innerHTML = `
             <div class="form-container">
                 <h2>🛹 Criar Conta</h2>
@@ -1289,35 +1305,95 @@
                         <label>Confirmar senha</label>
                         <input type="password" id="cadConfirmarSenha" placeholder="Repita a senha" required>
                     </div>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label>Nível no Skate</label>
+                        <select id="cadNivel" required>
+                            <option value="">Selecione seu nível</option>
+                            ${niveisHTML}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Objetivo</label>
+                        <select id="cadObjetivo" required>
+                            <option value="">Qual seu objetivo?</option>
+                            ${objetivosHTML}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tempo de Skate</label>
+                        <select id="cadTempo" required>
+                            <option value="">Há quanto tempo você anda?</option>
+                            ${temposHTML}
+                        </select>
+                    </div>
+
                     <button type="submit" class="btn">Criar conta</button>
                 </form>
                 <div class="link-text">Já tem conta? <a onclick="navegar('login')">Entrar</a></div>
                 <button class="btn btn-voltar" onclick="navegar('home')">← Voltar</button>
             </div>
         `;
+    } catch(e) {
+        alert('Erro ao carregar opções. Verifique se o servidor está rodando.');
+    }
+}
+
+async function fazerCadastro(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById('cadNome').value;
+    const email = document.getElementById('cadEmail').value;
+    const senha = document.getElementById('cadSenha').value;
+    const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
+
+    const nivel_id = document.getElementById('cadNivel').value;
+    const objetivo_id = document.getElementById('cadObjetivo').value;
+    const tempo_id = document.getElementById('cadTempo').value;
+
+    if (senha !== confirmarSenha) { 
+        alert('❌ As senhas não coincidem!'); 
+        return; 
+    }
+    if (senha.length < 6) { 
+        alert('❌ Senha deve ter no mínimo 6 caracteres!'); 
+        return; 
+    }
+    if (!nivel_id || !objetivo_id || !tempo_id) {
+        alert('❌ Preencha todos os campos de perfil!');
+        return;
     }
 
-    async function fazerCadastro(event) {
-        event.preventDefault();
-        const nome = document.getElementById('cadNome').value;
-        const email = document.getElementById('cadEmail').value;
-        const senha = document.getElementById('cadSenha').value;
-        const confirmarSenha = document.getElementById('cadConfirmarSenha').value;
-        if (senha !== confirmarSenha) { alert('❌ As senhas não coincidem!'); return; }
-        if (senha.length < 6) { alert('❌ Senha deve ter no mínimo 6 caracteres!'); return; }
-        try {
-            const res = await fetch(API_URL + '/usuarios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, email, senha })
-            });
-            const data = await res.json();
-            if (res.ok) { alert('✅ Conta criada! Faça login.'); navegar('login'); }
-            else { alert('❌ ' + (data.erro || 'Erro ao cadastrar')); }
-        } catch(e) {
-            alert('❌ Erro de conexão com o servidor!');
+    try {
+        const res = await fetch(API_URL + '/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                nome, 
+                email, 
+                senha, 
+                nivel_id: parseInt(nivel_id),
+                objetivo_id: parseInt(objetivo_id),
+                tempo_id: parseInt(tempo_id)
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok) { 
+            alert('✅ Conta criada com sucesso! Faça login.'); 
+            navegar('login'); 
         }
+        else { 
+            alert('❌ ' + (data.erro || 'Erro ao cadastrar')); 
+        }
+    } catch(e) {
+        alert('❌ Erro de conexão com o servidor!');
     }
+}
 
     // ==================== SOBRE ====================
     function carregarSobre() {

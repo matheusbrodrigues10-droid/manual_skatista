@@ -11,32 +11,61 @@ app.get("/teste", (req, res) => {
     res.json({ ok: true, db: "manual_skatista" });
 });
 
-// CADASTRO SIMPLES
+// CADASTRO COMPLETO
 app.post("/usuarios", (req, res) => {
     console.log("=".repeat(50));
     console.log("📥 RECEBI DADOS:", req.body);
     
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, nivel_id, objetivo_id, tempo_id } = req.body;
     
     if (!nome || !email || !senha) {
         return res.status(400).json({ erro: "Campos obrigatórios" });
     }
     
-    const sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
+    const sql = `
+        INSERT INTO usuarios 
+        (nome, email, senha, nivel_id, objetivo_id, tempo_id) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
     
-    db.query(sql, [nome, email, senha], (err, result) => {
+    db.query(sql, [nome, email, senha, nivel_id, objetivo_id, tempo_id], (err, result) => {
         if (err) {
             console.error("❌ ERRO:", err.message);
             return res.status(500).json({ erro: err.message });
         }
         
-        console.log("✅ INSERIDO! ID:", result.insertId);
+        console.log("✅ USUÁRIO CADASTRADO! ID:", result.insertId);
         console.log("=".repeat(50));
         
         res.status(201).json({ 
             ok: true, 
             id: result.insertId,
             mensagem: "Cadastrado com sucesso!" 
+        });
+    });
+});
+
+// OPÇÕES PARA CADASTRO
+app.get("/opcoes-cadastro", (req, res) => {
+    const sqlNiveis = "SELECT id, descricao FROM nivel_skate";
+    const sqlObjetivos = "SELECT id, descricao FROM objetivo_skate";
+    const sqlTempos = "SELECT id, descricao FROM tempo_skate";
+
+    db.query(sqlNiveis, (err1, niveis) => {
+        if (err1) return res.status(500).json({ erro: err1.message });
+
+        db.query(sqlObjetivos, (err2, objetivos) => {
+            if (err2) return res.status(500).json({ erro: err2.message });
+
+            db.query(sqlTempos, (err3, tempos) => {
+                if (err3) return res.status(500).json({ erro: err3.message });
+
+                res.json({
+                    niveis: niveis,
+                    objetivos: objetivos,
+                    tempos: tempos
+                });
+            });
         });
     });
 });
