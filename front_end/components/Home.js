@@ -5,7 +5,6 @@ export default function Home({ usuario }) {
         <>
             {!usuario ? (
                 <section className="hero">
-
                     <div className="hero-eyebrow">
                         Do iniciante ao avançado
                     </div>
@@ -23,7 +22,6 @@ export default function Home({ usuario }) {
                     </p>
 
                     <div className="hero-actions">
-
                         <Link
                             href="/cadastro"
                             className="btn-hero-primary"
@@ -37,32 +35,26 @@ export default function Home({ usuario }) {
                         >
                             Já tenho conta
                         </Link>
-
                     </div>
-
                 </section>
             ) : (
                 <section className="welcome-banner">
-
                     <div className="hero-eyebrow">
                         Bem-vindo de volta
                     </div>
 
                     <h2>
-                        E aí, <em>{usuario.nome}</em>! 🛹
+                        E aí, <em>{usuario?.nome}</em>! 🛹
                     </h2>
 
                     <p>
                         Pronto para evoluir no skate hoje?
                     </p>
-
                 </section>
             )}
 
             <div className="stat-strip">
-
                 <div className="stat-strip-inner">
-
                     <div className="stat-item">
                         <span className="stat-number">12K+</span>
                         <span className="stat-label">Skatistas</span>
@@ -88,13 +80,10 @@ export default function Home({ usuario }) {
                         <span className="stat-number">100%</span>
                         <span className="stat-label">Gratuito</span>
                     </div>
-
                 </div>
-
             </div>
 
             <section className="services-section">
-
                 <div className="section-label">
                     <span>O que você encontra</span>
                 </div>
@@ -104,7 +93,6 @@ export default function Home({ usuario }) {
                 </h2>
 
                 <div className="services-grid">
-
                     <Link
                         href="/manobras"
                         className="service-card"
@@ -212,23 +200,7 @@ export default function Home({ usuario }) {
                             Assistir →
                         </div>
                     </Link>
-
-                    <div className="hero-eyebrow">
-            Bem-vindo de volta
-        </div>
-
-        <h2>
-            E aí, <em>{usuario.nome}</em>! 🛹
-        </h2>
-
-        <p>
-            Pronto para evoluir no skate hoje?
-        </p>
-
-
                 </div>
-
-
             </section>
 
             <div className="tape-divider"></div>

@@ -5,17 +5,19 @@ export async function POST(request) {
     try {
         const body = await request.json();
 
-        const response = await fetch(
-            `${process.env.BACKEND_URL}/login`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body),
-                cache: "no-store"
-            }
-        );
+        // Fallback: se BACKEND_URL for undefined, usa http://127.0.0.1:5000 (ou ajuste a sua porta)
+        const baseUrl = process.env.BACKEND_URL || "http://127.0.0.1:5000";
+
+        console.log("Conectando em:", `${baseUrl}/login`);
+
+        const response = await fetch(`${baseUrl}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body),
+            cache: "no-store"
+        });
 
         const data = await response.json();
 
