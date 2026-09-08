@@ -2,15 +2,56 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
+
         const { searchParams } =
             new URL(request.url);
 
-        const params =
-            searchParams.toString();
+        const origemLat =
+            searchParams.get("origemLat");
+
+        const origemLng =
+            searchParams.get("origemLng");
+
+        const destinoLat =
+            searchParams.get("destinoLat");
+
+        const destinoLng =
+            searchParams.get("destinoLng");
+
+        if (
+            !origemLat ||
+            !origemLng ||
+            !destinoLat ||
+            !destinoLng
+        ) {
+            return NextResponse.json(
+                {
+                    erro:
+                        "Coordenadas incompletas."
+                },
+                {
+                    status: 400
+                }
+            );
+        }
+
+        const url =
+            `${process.env.BACKEND_URL}/pistas/rota?` +
+            new URLSearchParams({
+                origemLat,
+                origemLng,
+                destinoLat,
+                destinoLng
+            });
+
+        console.log(
+            "Chamando backend:",
+            url
+        );
 
         const response =
             await fetch(
-                `${process.env.BACKEND_URL}/pistas/rota?${params}`,
+                url,
                 {
                     cache: "no-store"
                 }
@@ -18,6 +59,11 @@ export async function GET(request) {
 
         const data =
             await response.json();
+
+        console.log(
+            "Resposta da rota:",
+            data
+        );
 
         return NextResponse.json(
             data,
@@ -27,15 +73,18 @@ export async function GET(request) {
         );
 
     } catch (error) {
+
         console.error(
-            "Erro na API de rota:",
+            "ERRO API ROTA:",
             error
         );
 
         return NextResponse.json(
             {
                 erro:
-                    "Erro ao calcular a rota."
+                    "Erro ao calcular a rota.",
+                detalhe:
+                    error.message
             },
             {
                 status: 500

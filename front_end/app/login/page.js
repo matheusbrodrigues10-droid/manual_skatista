@@ -20,36 +20,51 @@ export default function LoginPage() {
         setCarregando(true);
 
         try {
-            const response = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email,
-                    senha
-                })
-            });
+            const response = await fetch(
+                "/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email,
+                        senha
+                    })
+                }
+            );
 
             const data = await response.json();
 
+            console.log("Resposta do login:", data);
+
             if (!response.ok) {
-                setErro(data.erro || "Credenciais inválidas");
+                setErro(
+                    data.erro ||
+                    "E-mail ou senha inválidos."
+                );
                 return;
             }
+
+            console.log("Login realizado!");
 
             const redirect =
                 searchParams.get("redirect") || "/";
 
-            window.dispatchEvent(
-    new Event("usuarioLogou")
-);
-
-router.push(redirect);
-router.refresh();
+            router.push(redirect);
+            router.refresh();
 
         } catch (error) {
-            setErro("Erro de conexão com o servidor.");
+
+            console.error(
+                "Erro no login:",
+                error
+            );
+
+            setErro(
+                "Erro de conexão com o servidor."
+            );
+
         } finally {
             setCarregando(false);
         }
@@ -65,10 +80,12 @@ router.refresh();
             </p>
 
             {erro && (
-                <p style={{
-                    color: "var(--red)",
-                    marginBottom: "1rem"
-                }}>
+                <p
+                    style={{
+                        color: "var(--red)",
+                        marginBottom: "1rem"
+                    }}
+                >
                     ❌ {erro}
                 </p>
             )}
@@ -76,27 +93,35 @@ router.refresh();
             <form onSubmit={fazerLogin}>
 
                 <div className="form-group">
+
                     <label>E-mail</label>
 
                     <input
                         type="email"
                         placeholder="seu@email.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(event) =>
+                            setEmail(event.target.value)
+                        }
                         required
                     />
+
                 </div>
 
                 <div className="form-group">
+
                     <label>Senha</label>
 
                     <input
                         type="password"
                         placeholder="••••••••"
                         value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
+                        onChange={(event) =>
+                            setSenha(event.target.value)
+                        }
                         required
                     />
+
                 </div>
 
                 <button
@@ -104,16 +129,21 @@ router.refresh();
                     className="btn"
                     disabled={carregando}
                 >
-                    {carregando ? "Entrando..." : "Entrar"}
+                    {carregando
+                        ? "Entrando..."
+                        : "Entrar"}
                 </button>
 
             </form>
 
             <div className="link-text">
+
                 Não tem conta?{" "}
+
                 <Link href="/cadastro">
                     Criar conta grátis
                 </Link>
+
             </div>
 
             <Link

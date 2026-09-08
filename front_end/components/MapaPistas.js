@@ -7,45 +7,47 @@ export default function MapaPistas({
     pista,
     rota
 }) {
-    const mapaRef =
-        useRef(null);
-
-    const mapaContainerRef =
-        useRef(null);
+    const mapaRef = useRef(null);
+    const containerRef = useRef(null);
 
     useEffect(() => {
+        let cancelado = false;
 
-        let mapa;
-
-        async function iniciar() {
-
+        async function criarMapa() {
             if (
-                !mapaContainerRef.current ||
+                !containerRef.current ||
                 mapaRef.current
             ) {
                 return;
             }
 
-            const L =
-                await import("leaflet");
+            const L = await import("leaflet");
+            await import("leaflet/dist/leaflet.css");
 
-            await import(
-                "leaflet/dist/leaflet.css"
+            if (cancelado) {
+                return;
+            }
+
+            // Evita inicializar o mesmo container duas vezes
+            if (
+                containerRef.current._leaflet_id
+            ) {
+                containerRef.current._leaflet_id = null;
+            }
+
+            if (mapaRef.current) {
+                return;
+            }
+
+            const mapa = L.map(
+                containerRef.current
+            ).setView(
+                [
+                    origem?.latitude ?? -22.11,
+                    origem?.longitude ?? -51.40
+                ],
+                13
             );
-
-            mapa =
-                L.map(
-                    mapaContainerRef.current
-                ).setView(
-                    [
-                        origem?.latitude ||
-                            -22.11,
-
-                        origem?.longitude ||
-                            -51.40
-                    ],
-                    13
-                );
 
             L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -55,26 +57,28 @@ export default function MapaPistas({
                 }
             ).addTo(mapa);
 
-            mapaRef.current =
-                mapa;
+            mapaRef.current = mapa;
         }
 
-        iniciar();
+        criarMapa();
 
         return () => {
+            cancelado = true;
 
-            if (mapa) {
-                mapa.remove();
+            if (mapaRef.current) {
+                mapaRef.current.remove();
+                mapaRef.current = null;
             }
 
-            mapaRef.current =
-                null;
+            if (
+                containerRef.current
+            ) {
+                containerRef.current._leaflet_id = null;
+            }
         };
-
     }, []);
 
     useEffect(() => {
-
         if (
             !mapaRef.current ||
             !origem
@@ -82,36 +86,34 @@ export default function MapaPistas({
             return;
         }
 
-        desenharMapa();
+        atualizarMapa();
 
-    }, [
-        origem,
-        pista,
-        rota
-    ]);
+    }, [origem, pista, rota]);
 
-    async function desenharMapa() {
-
-        const L =
-            await import("leaflet");
+    async function atualizarMapa() {
 
         const mapa =
             mapaRef.current;
 
-        mapa.eachLayer(
-            (layer) => {
+        if (!mapa) {
+            return;
+        }
 
-                if (
-                    !layer._url
-                ) {
-                    mapa.removeLayer(
-                        layer
-                    );
-                }
+        const L =
+            await import("leaflet");
 
+        // Remove marcadores e rotas anteriores
+        mapa.eachLayer((layer) => {
+
+            if (
+                !layer._url
+            ) {
+                mapa.removeLayer(layer);
             }
-        );
 
+        });
+
+        // Recoloca o mapa base
         L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             {
@@ -120,111 +122,101 @@ export default function MapaPistas({
             }
         ).addTo(mapa);
 
-
-        // -------------------------------------
-        // MARCADOR DA ORIGEM
-        // -------------------------------------
+        // ----------------------------------
+        // ORIGEM
+        // ----------------------------------
 
         const origemPoint = [
-            origem.latitude,
-            origem.longitude
+            Number(origem.latitude),
+            Number(origem.longitude)
         ];
 
-        L.marker(
-            origemPoint
-        )
+        L.marker(origemPoint)
             .addTo(mapa)
             .bindPopup(
                 "📍 Sua localização"
             );
 
+        // ----------------------------------
+        // DESTINO
+        // ----------------------------------
 
-        // -------------------------------------
-        // MARCADOR DA PISTA
-        // -------------------------------------
-
-        if (pista) {
-
-            const pistaPoint = [
-                pista.latitude,
-                pista.longitude
-            ];
-
-            L.marker(
-                pistaPoint
-            )
-                .addTo(mapa)
-                .bindPopup(
-                    `🛹 ${pista.nome}`
-                );
-
-
-            // ---------------------------------
-            // LINHA DA ROTA
-            // ---------------------------------
-
-            if (
-                rota?.geometry?.coordinates
-            ) {
-
-                const pontos =
-                    rota.geometry.coordinates.map(
-                        (coordenada) => [
-
-                            coordenada[1],
-                            coordenada[0]
-
-                        ]
-                    );
-
-                const linha =
-                    L.polyline(
-                        pontos,
-                        {
-                            weight: 5
-                        }
-                    ).addTo(mapa);
-
-
-                mapa.fitBounds(
-                    linha.getBounds(),
-                    {
-                        padding: [
-                            40,
-                            40
-                        ]
-                    }
-                );
-
-            } else {
-
-                mapa.fitBounds(
-                    [
-                        origemPoint,
-                        pistaPoint
-                    ],
-                    {
-                        padding: [
-                            40,
-                            40
-                        ]
-                    }
-                );
-
-            }
-
-        } else {
-
+        if (!pista) {
             mapa.setView(
                 origemPoint,
                 13
+            );
+
+            return;
+        }
+
+        const pistaPoint = [
+            Number(pista.latitude),
+            Number(pista.longitude)
+        ];
+
+        L.marker(pistaPoint)
+            .addTo(mapa)
+            .bindPopup(
+                `🛹 ${pista.nome}`
+            );
+
+        // ----------------------------------
+        // ROTA
+        // ----------------------------------
+
+        if (
+            rota &&
+            rota.geometry &&
+            rota.geometry.coordinates
+        ) {
+
+            const pontos =
+                rota.geometry.coordinates.map(
+                    ([lng, lat]) => [
+                        Number(lat),
+                        Number(lng)
+                    ]
+                );
+
+            const linha =
+                L.polyline(
+                    pontos,
+                    {
+                        weight: 5
+                    }
+                ).addTo(mapa);
+
+            mapa.fitBounds(
+                linha.getBounds(),
+                {
+                    padding: [
+                        40,
+                        40
+                    ]
+                }
+            );
+
+        } else {
+
+            mapa.fitBounds(
+                [
+                    origemPoint,
+                    pistaPoint
+                ],
+                {
+                    padding: [
+                        40,
+                        40
+                    ]
+                }
             );
         }
     }
 
     return (
         <div
-            ref={mapaContainerRef}
+            ref={containerRef}
             style={{
                 width: "100%",
                 height: "420px",

@@ -142,39 +142,39 @@ export default function PistasPage() {
         try {
 
             const params =
-                new URLSearchParams({
-                    origemLat:
-                        String(origem.latitude),
+    new URLSearchParams({
+        origemLat:
+            String(origem.latitude),
 
-                    origemLng:
-                        String(origem.longitude),
+        origemLng:
+            String(origem.longitude),
 
-                    destinoLat:
-                        String(pista.latitude),
+        destinoLat:
+            String(pista.latitude),
 
-                    destinoLng:
-                        String(pista.longitude)
-                });
+        destinoLng:
+            String(pista.longitude)
+    });
 
-            const response =
-                await fetch(
-                    `/api/pistas/rota?${params}`,
-                    {
-                        cache: "no-store"
-                    }
-                );
+const response =
+    await fetch(
+        `/api/pistas/rota?${params.toString()}`,
+        {
+            cache: "no-store"
+        }
+    );
 
-            const data =
-                await response.json();
+const data =
+    await response.json();
 
-            if (!response.ok) {
-                throw new Error(
-                    data.erro ||
-                    "Erro ao calcular rota."
-                );
-            }
+if (!response.ok) {
+    throw new Error(
+        data.erro ||
+        "Erro ao calcular rota."
+    );
+}
 
-            setRota(data);
+setRota(data);
 
         } catch (error) {
 
