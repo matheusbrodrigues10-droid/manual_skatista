@@ -5,34 +5,30 @@ import PageHeader from "@/components/PageHeader";
 import MapaPistas from "@/components/MapaPistas";
 
 function formatarDistancia(metros) {
-
     if (metros < 1000) {
         return `${Math.round(metros)} m`;
     }
 
-    return `${(
-        metros / 1000
-    ).toFixed(1)} km`;
+    return `${(metros / 1000).toFixed(1)} km`;
 }
 
 function formatarTempo(segundos) {
-
     const minutos =
-        Math.round(
-            segundos / 60
-        );
+        Math.round(segundos / 60);
 
     if (minutos < 60) {
         return `${minutos} min`;
     }
 
     const horas =
-        Math.floor(
-            minutos / 60
-        );
+        Math.floor(minutos / 60);
 
     const resto =
         minutos % 60;
+
+    if (resto === 0) {
+        return `${horas}h`;
+    }
 
     return `${horas}h ${resto}min`;
 }
@@ -40,11 +36,18 @@ function formatarTempo(segundos) {
 export default function PistasPage() {
 
     const [cep, setCep] = useState("");
-    const [origem, setOrigem] = useState(null);
-    const [pistas, setPistas] = useState([]);
+
+    const [origem, setOrigem] =
+        useState(null);
+
+    const [pistas, setPistas] =
+        useState([]);
+
     const [pistaSelecionada, setPistaSelecionada] =
         useState(null);
-    const [rota, setRota] = useState(null);
+
+    const [rota, setRota] =
+        useState(null);
 
     const [carregando, setCarregando] =
         useState(false);
@@ -60,6 +63,7 @@ export default function PistasPage() {
         setPistas([]);
         setPistaSelecionada(null);
         setRota(null);
+        setOrigem(null);
 
         const cepLimpo =
             cep.replace(/\D/g, "");
@@ -77,7 +81,10 @@ export default function PistasPage() {
 
             const response =
                 await fetch(
-                    `http://localhost:3001/pistas/proximas?cep=${cepLimpo}`
+                    `/api/pistas/proximas?cep=${cepLimpo}`,
+                    {
+                        cache: "no-store"
+                    }
                 );
 
             const data =
@@ -100,11 +107,13 @@ export default function PistasPage() {
 
             if (!data.pistas.length) {
                 setErro(
-                    "Nenhuma pista cadastrada foi encontrada."
+                    "Nenhuma pista foi encontrada."
                 );
             }
 
         } catch (error) {
+
+            console.error(error);
 
             setErro(
                 error.message
@@ -124,6 +133,7 @@ export default function PistasPage() {
         );
 
         setRota(null);
+        setErro("");
 
         if (!origem) {
             return;
@@ -134,18 +144,24 @@ export default function PistasPage() {
             const params =
                 new URLSearchParams({
                     origemLat:
-                        origem.latitude,
+                        String(origem.latitude),
+
                     origemLng:
-                        origem.longitude,
+                        String(origem.longitude),
+
                     destinoLat:
-                        pista.latitude,
+                        String(pista.latitude),
+
                     destinoLng:
-                        pista.longitude
+                        String(pista.longitude)
                 });
 
             const response =
                 await fetch(
-                    `http://localhost:3001/pistas/rota?${params}`
+                    `/api/pistas/rota?${params}`,
+                    {
+                        cache: "no-store"
+                    }
                 );
 
             const data =
@@ -161,6 +177,8 @@ export default function PistasPage() {
             setRota(data);
 
         } catch (error) {
+
+            console.error(error);
 
             setErro(
                 error.message
@@ -190,16 +208,18 @@ export default function PistasPage() {
 
                     <input
                         type="text"
-                        placeholder="Digite seu CEP"
                         value={cep}
-                        onChange={(event) =>
-                            setCep(event.target.value)
+                        onChange={(e) =>
+                            setCep(e.target.value)
                         }
+                        placeholder="Digite seu CEP"
                         maxLength={9}
+                        required
                         style={{
                             flex: 1,
                             minWidth: "220px",
-                            padding: "0.9rem 1rem",
+                            padding:
+                                "0.9rem 1rem",
                             background:
                                 "var(--black-soft)",
                             color:
@@ -216,13 +236,13 @@ export default function PistasPage() {
                         className="btn"
                         style={{
                             width: "auto",
-                            paddingLeft: "2rem",
-                            paddingRight: "2rem"
+                            padding:
+                                "0.9rem 2rem"
                         }}
                     >
                         {carregando
-                            ? "Buscando..."
-                            : "Buscar pistas"}
+                            ? "BUSCANDO..."
+                            : "BUSCAR PISTAS"}
                     </button>
 
                 </form>
@@ -246,11 +266,17 @@ export default function PistasPage() {
                             marginBottom:
                                 "1.5rem",
                             color:
-                                "var(--grey-light)"
+                                "var(--grey)"
                         }}
                     >
-                        📍 Local encontrado:
-                        <strong>
+                        📍 Localização encontrada:
+
+                        <strong
+                            style={{
+                                color:
+                                    "var(--white)"
+                            }}
+                        >
                             {" "}
                             {origem.logradouro}
                             {origem.bairro
@@ -271,6 +297,7 @@ export default function PistasPage() {
                                 "2rem"
                         }}
                     >
+
                         <MapaPistas
                             origem={origem}
                             pista={
@@ -278,70 +305,79 @@ export default function PistasPage() {
                             }
                             rota={rota}
                         />
+
                     </div>
                 )}
 
                 {pistaSelecionada &&
                     rota && (
+
+                    <div
+                        style={{
+                            background:
+                                "var(--black-soft)",
+                            border:
+                                "1px solid rgba(215,38,56,0.3)",
+                            borderRadius:
+                                "var(--radius-md)",
+                            padding:
+                                "1.5rem",
+                            marginBottom:
+                                "2rem"
+                        }}
+                    >
+
+                        <div
+                            className="pista-name"
+                        >
+                            🛹{" "}
+                            {
+                                pistaSelecionada.nome
+                            }
+                        </div>
+
                         <div
                             style={{
-                                background:
-                                    "var(--black-soft)",
-                                border:
-                                    "1px solid rgba(215,38,56,0.3)",
-                                borderRadius:
-                                    "var(--radius-md)",
-                                padding: "1.5rem",
-                                marginBottom:
-                                    "2rem"
+                                display:
+                                    "flex",
+                                gap:
+                                    "2rem",
+                                marginTop:
+                                    "0.75rem",
+                                flexWrap:
+                                    "wrap"
                             }}
                         >
 
-                            <div
-                                className="pista-name"
-                            >
-                                🛹{" "}
-                                {
-                                    pistaSelecionada.nome
-                                }
+                            <div>
+                                📏{" "}
+                                <strong>
+                                    {
+                                        formatarDistancia(
+                                            rota.distancia
+                                        )
+                                    }
+                                </strong>
                             </div>
 
-                            <div
-                                style={{
-                                    marginTop:
-                                        "0.75rem",
-                                    display:
-                                        "flex",
-                                    gap: "2rem",
-                                    flexWrap:
-                                        "wrap"
-                                }}
-                            >
-
-                                <div>
-                                    📏{" "}
-                                    <strong>
-                                        {formatarDistancia(
-                                            rota.distancia
-                                        )}
-                                    </strong>
-                                </div>
-
-                                <div>
-                                    ⏱️{" "}
-                                    <strong>
-                                        {formatarTempo(
+                            <div>
+                                ⏱️{" "}
+                                <strong>
+                                    {
+                                        formatarTempo(
                                             rota.duracao
-                                        )}
-                                    </strong>
-                                </div>
-
+                                        )
+                                    }
+                                </strong>
                             </div>
 
                         </div>
-                    )}
+
+                    </div>
+                )}
 
                 {pistas.length > 0 && (
+
                     <div>
 
                         <div
@@ -361,7 +397,8 @@ export default function PistasPage() {
                                 {pistas.length}
                             </strong>{" "}
                             pistas encontradas,
-                            ordenadas pela distância
+                            da mais próxima para
+                            a mais distante
                         </div>
 
                         <div
@@ -370,6 +407,7 @@ export default function PistasPage() {
 
                             {pistas.map(
                                 (pista) => (
+
                                     <button
                                         key={
                                             pista.id
@@ -379,15 +417,17 @@ export default function PistasPage() {
                                                 pista
                                             )
                                         }
+                                        className="pista-card"
                                         style={{
                                             textAlign:
                                                 "left",
                                             color:
                                                 "inherit",
                                             font:
-                                                "inherit"
+                                                "inherit",
+                                            cursor:
+                                                "pointer"
                                         }}
-                                        className="pista-card"
                                     >
 
                                         <div
@@ -396,13 +436,17 @@ export default function PistasPage() {
 
                                             <div>
 
-                                                <div className="pista-name">
+                                                <div
+                                                    className="pista-name"
+                                                >
                                                     {
                                                         pista.nome
                                                     }
                                                 </div>
 
-                                                <div className="pista-address">
+                                                <div
+                                                    className="pista-address"
+                                                >
                                                     📌{" "}
                                                     {
                                                         pista.endereco
@@ -434,16 +478,15 @@ export default function PistasPage() {
 
                                         <div
                                             className="pista-rating"
-                                            style={{
-                                                color:
-                                                    "var(--red)"
-                                            }}
                                         >
                                             📍{" "}
+
                                             <strong>
-                                                {formatarDistancia(
-                                                    pista.distancia
-                                                )}
+                                                {
+                                                    formatarDistancia(
+                                                        pista.distancia
+                                                    )
+                                                }
                                             </strong>
 
                                             <span>
@@ -458,6 +501,7 @@ export default function PistasPage() {
                                         </div>
 
                                     </button>
+
                                 )
                             )}
 
