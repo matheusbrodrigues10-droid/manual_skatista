@@ -1,0 +1,566 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Manual do Skatista API",
+    "description": "Documentação da API do projeto Manual do Skatista.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "url": "http://10.111.9.55:3001/api-docs",
+      "description": "Servidor local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Teste",
+      "description": "Rotas para testar o funcionamento da API"
+    },
+    {
+      "name": "Usuários",
+      "description": "Cadastro, login e consulta de usuários"
+    },
+    {
+      "name": "Cadastro",
+      "description": "Dados auxiliares utilizados no cadastro"
+    },
+    {
+      "name": "Pistas",
+      "description": "Localização, distância e rotas das pistas de skate"
+    }
+  ],
+  "paths": {
+    "/teste": {
+      "get": {
+        "tags": ["Teste"],
+        "summary": "Testa a API e a conexão com o banco",
+        "responses": {
+          "200": {
+            "description": "API funcionando",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "db": "manual_skatista"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/usuarios": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Lista todos os usuários",
+        "responses": {
+          "200": {
+            "description": "Usuários encontrados",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "nome": "Teste Direto",
+                    "email": "teste@direto.com",
+                    "senha": "123456",
+                    "nivel_id": 1,
+                    "objetivo_id": 1,
+                    "tempo_id": 1
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar usuários",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Erro ao consultar banco de dados"
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Cadastra um novo usuário",
+        "description": "Cria um novo usuário com nome, email, senha e informações sobre o perfil no skate.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nome",
+                  "email",
+                  "senha"
+                ],
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "example": "Matheus"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "matheus@email.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "123456"
+                  },
+                  "nivel_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "objetivo_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "tempo_id": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              },
+              "example": {
+                "nome": "Matheus",
+                "email": "matheus@email.com",
+                "senha": "123456",
+                "nivel_id": 1,
+                "objetivo_id": 1,
+                "tempo_id": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "id": 10,
+                  "mensagem": "Cadastrado com sucesso!"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos obrigatórios não informados",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Campos obrigatórios"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no banco de dados",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Erro ao cadastrar usuário"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/login": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Realiza o login do usuário",
+        "description": "Verifica o email e a senha informados no banco de dados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "senha"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "teste@direto.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "123456"
+                  }
+                }
+              },
+              "example": {
+                "email": "teste@direto.com",
+                "senha": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 1,
+                  "nome": "Teste Direto",
+                  "email": "teste@direto.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email ou senha não informados",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Email e senha são obrigatórios"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Email ou senha inválidos"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Erro interno"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/opcoes-cadastro": {
+      "get": {
+        "tags": ["Cadastro"],
+        "summary": "Retorna opções utilizadas no cadastro",
+        "responses": {
+          "200": {
+            "description": "Opções encontradas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "niveis": [
+                    {
+                      "id": 1,
+                      "descricao": "Iniciante"
+                    }
+                  ],
+                  "objetivos": [
+                    {
+                      "id": 1,
+                      "descricao": "Lazer"
+                    }
+                  ],
+                  "tempos": [
+                    {
+                      "id": 1,
+                      "descricao": "1-6 meses"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao consultar as tabelas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Erro ao consultar banco de dados"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/tempos": {
+      "get": {
+        "tags": ["Cadastro"],
+        "summary": "Lista os tempos de prática no skate",
+        "responses": {
+          "200": {
+            "description": "Tempos encontrados",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "descricao": "1-6 meses"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar tempos"
+          }
+        }
+      }
+    },
+
+    "/niveis": {
+      "get": {
+        "tags": ["Cadastro"],
+        "summary": "Lista os níveis de skate",
+        "responses": {
+          "200": {
+            "description": "Níveis encontrados",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "descricao": "Iniciante"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar níveis"
+          }
+        }
+      }
+    },
+
+    "/objetivos": {
+      "get": {
+        "tags": ["Cadastro"],
+        "summary": "Lista os objetivos no skate",
+        "responses": {
+          "200": {
+            "description": "Objetivos encontrados",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "descricao": "Lazer"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar objetivos"
+          }
+        }
+      }
+    },
+
+    "/pistas/proximas": {
+      "get": {
+        "tags": ["Pistas"],
+        "summary": "Busca as pistas mais próximas de um CEP",
+        "description": "Recebe um CEP, localiza a origem e calcula a distância e duração até as pistas cadastradas.",
+        "parameters": [
+          {
+            "name": "cep",
+            "in": "query",
+            "required": true,
+            "description": "CEP de origem do usuário",
+            "schema": {
+              "type": "string",
+              "example": "19060030"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pistas encontradas e ordenadas por distância",
+            "content": {
+              "application/json": {
+                "example": {
+                  "origem": {
+                    "cep": "19060-030",
+                    "logradouro": "Rua Roberto Mange",
+                    "bairro": "Jardim Marupiara",
+                    "cidade": "Presidente Prudente",
+                    "estado": "SP",
+                    "latitude": -22.1215868,
+                    "longitude": -51.4051696
+                  },
+                  "pistas": [
+                    {
+                      "id": 1,
+                      "nome": "Pista de Skate Parque do Povo",
+                      "endereco": "Campo de Futebol do Parque do Povo - Av. 11 de Maio, S/N",
+                      "bairro": "Parque do Povo",
+                      "cidade": "Presidente Prudente",
+                      "estado": "SP",
+                      "cep": "19100-000",
+                      "tipo": "livre",
+                      "descricao": "Pista pública com quarter, mini-half, trilhos, hubbas, manual pads e escadarias.",
+                      "latitude": -22.1174,
+                      "longitude": -51.4056,
+                      "distancia": 1372.7,
+                      "duracao": 136.6
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CEP não informado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Informe o CEP."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao localizar o CEP ou calcular as distâncias",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Não foi possível localizar o CEP no mapa."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/pistas/rota": {
+      "get": {
+        "tags": ["Pistas"],
+        "summary": "Calcula uma rota até uma pista",
+        "description": "Recebe as coordenadas da origem e do destino e retorna distância, duração e geometria da rota.",
+        "parameters": [
+          {
+            "name": "origemLat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": -22.1215868
+            }
+          },
+          {
+            "name": "origemLng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": -51.4051696
+            }
+          },
+          {
+            "name": "destinoLat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": -22.1174
+            }
+          },
+          {
+            "name": "destinoLng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": -51.4056
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rota calculada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "distancia": 1372.7,
+                  "duracao": 136.6,
+                  "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                      [
+                        -51.4051696,
+                        -22.1215868
+                      ],
+                      [
+                        -51.4056,
+                        -22.1174
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Coordenadas incompletas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Coordenadas incompletas."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rota não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Não foi possível encontrar uma rota."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao calcular a rota",
+            "content": {
+              "application/json": {
+                "example": {
+                  "erro": "Erro ao calcular a rota."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

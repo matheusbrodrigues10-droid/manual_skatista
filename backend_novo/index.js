@@ -1,13 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// =====================================================
+// SWAGGER
+// =====================================================
 
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+);
 // =====================================================
 // FUNÇÕES AUXILIARES
 // =====================================================
@@ -375,6 +385,8 @@ async function buscarCoordenadasPorCep(cep) {
     const endereco =
         await viaCepResponse.json();
 
+        console.log
+
     if (endereco.erro) {
         throw new Error(
             "CEP não encontrado."
@@ -436,6 +448,8 @@ async function buscarCoordenadasPorCep(cep) {
 
     let resultados =
         await nominatimResponse.json();
+
+        console.log
 
 
     // -----------------------------------------
