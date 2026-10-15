@@ -854,6 +854,42 @@ app.get(
 
 const PORT = 3001;
 
+// =========================================
+// MANOBRAS
+// =========================================
+
+app.get("/manobras", (req, res) => {
+    const sql = `
+        SELECT
+            id,
+            nome,
+            categoria,
+            nivel,
+            descricao,
+            video_url,
+            icone,
+            ordem
+        FROM manobras
+        WHERE ativo = 1
+        ORDER BY ordem ASC, id ASC
+    `;
+
+    db.query(sql, (err, resultado) => {
+        if (err) {
+            console.error(
+                "Erro ao buscar manobras:",
+                err.message
+            );
+
+            return res.status(500).json({
+                erro: "Não foi possível buscar as manobras."
+            });
+        }
+
+        return res.status(200).json(resultado);
+    });
+});
+
 app.listen(
     PORT,
     () => {
