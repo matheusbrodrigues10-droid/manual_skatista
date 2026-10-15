@@ -862,9 +862,6 @@ app.get(
 );
 
 
-// =====================================================
-// INICIAR SERVIDOR
-// =====================================================
 
 const PORT = 3001;
 
@@ -897,6 +894,78 @@ app.get("/manobras", (req, res) => {
 
             return res.status(500).json({
                 erro: "Não foi possível buscar as manobras."
+            });
+        }
+
+        return res.status(200).json(resultado);
+    });
+});
+
+// =========================================
+// MONTAGENS E MANUTENÇÃO
+// =========================================
+
+app.get("/montagens", (req, res) => {
+    const sql = `
+        SELECT
+            id,
+            nome,
+            categoria,
+            descricao,
+            video_url,
+            icone,
+            ordem
+        FROM montagens
+        WHERE ativo = 1
+        ORDER BY ordem ASC, id ASC
+    `;
+
+    db.query(sql, (err, resultado) => {
+        if (err) {
+            console.error(
+                "Erro ao buscar montagens:",
+                err.message
+            );
+
+            return res.status(500).json({
+                erro: "Não foi possível buscar os tutoriais de montagem."
+            });
+        }
+
+        return res.status(200).json(resultado);
+    });
+});
+
+// =========================================
+// EQUIPAMENTOS
+// =========================================
+
+app.get("/equipamentos", (req, res) => {
+    const sql = `
+        SELECT
+            id,
+            nome,
+            categoria,
+            nivel,
+            descricao,
+            produto_url,
+            imagem_url,
+            icone,
+            ordem
+        FROM equipamentos
+        WHERE ativo = 1
+        ORDER BY ordem ASC, id ASC
+    `;
+
+    db.query(sql, (err, resultado) => {
+        if (err) {
+            console.error(
+                "Erro ao buscar equipamentos:",
+                err.message
+            );
+
+            return res.status(500).json({
+                erro: "Não foi possível buscar os equipamentos."
             });
         }
 
