@@ -357,186 +357,186 @@ app.post("/login", (req, res) => {
 
 async function buscarCoordenadasPorCep(cep) {
 
-    const cepLimpo =
-        limparCep(cep);
+    const cepLimpo = limparCep(cep);
 
-    if (cepLimpo.length !== 8) {
-        throw new Error(
-            "CEP inválido."
-        );
+    if (!/^\d{8}$/.test(cepLimpo)) {
+        throw new Error("CEP inválido.");
     }
 
-
     // -----------------------------------------
-    // VIACEP
+    // 1. CONSULTAR VIACEP
     // -----------------------------------------
 
-    const viaCepResponse =
-        await fetch(
-            `https://viacep.com.br/ws/${cepLimpo}/json/`
-        );
+    const viaCepResponse = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
+    );
 
     if (!viaCepResponse.ok) {
-        throw new Error(
-            "Erro ao consultar o CEP."
-        );
+        throw new Error("Erro ao consultar o ViaCEP.");
     }
 
-    const endereco =
-        await viaCepResponse.json();
+    const endereco = await viaCepResponse.json();
 
-        console.log
+    console.log("RESULTADO VIACEP:", endereco);
 
     if (endereco.erro) {
-        throw new Error(
-            "CEP não encontrado."
-        );
+        throw new Error("CEP não encontrado.");
     }
 
-
     // -----------------------------------------
-    // NOMINATIM
+    // 2. FUNÇÃO PARA CONSULTAR O NOMINATIM
     // -----------------------------------------
 
-    const parametros =
-        new URLSearchParams({
+    async function consultarNominatim(parametros) {
 
-            street:
-                endereco.logradouro || "",
-
-            city:
-                endereco.localidade || "",
-
-            state:
-                endereco.uf || "",
-
-            country:
-                "Brazil",
-
-            postalcode:
-                endereco.cep
-                    ? endereco.cep.replace(/\D/g, "")
-                    : cepLimpo,
-
-            format:
-                "jsonv2",
-
-            limit:
-                "1"
-        });
-
-
-    const nominatimResponse =
-        await fetch(
+        const response = await fetch(
             `https://nominatim.openstreetmap.org/search?${parametros}`,
             {
                 headers: {
-                    "User-Agent":
-                        "Manual-do-Skatista/1.0"
+                    "User-Agent": "Manual-do-Skatista/1.0",
+                    "Accept-Language": "pt-BR"
                 }
             }
         );
 
-
-    if (!nominatimResponse.ok) {
-
-        throw new Error(
-            "Erro ao localizar o endereço no mapa."
-        );
-    }
-
-
-    let resultados =
-        await nominatimResponse.json();
-
-        console.log
-
-
-    // -----------------------------------------
-    // SEGUNDA TENTATIVA
-    // -----------------------------------------
-
-    if (!resultados.length) {
-
-        const buscaAlternativa =
-            new URLSearchParams({
-
-                q: [
-                    endereco.logradouro,
-                    endereco.bairro,
-                    endereco.localidade,
-                    endereco.uf,
-                    "Brazil"
-                ]
-                    .filter(Boolean)
-                    .join(", "),
-
-                format:
-                    "jsonv2",
-
-                limit:
-                    "1"
-            });
-
-
-        const segundaBusca =
-            await fetch(
-                `https://nominatim.openstreetmap.org/search?${buscaAlternativa}`,
-                {
-                    headers: {
-                        "User-Agent":
-                            "Manual-do-Skatista/1.0"
-                    }
-                }
+        if (response.status === 429) {
+            throw new Error(
+                "O serviço de mapas recebeu muitas consultas. Aguarde um pouco e tente novamente."
             );
-
-
-        if (segundaBusca.ok) {
-            resultados =
-                await segundaBusca.json();
         }
+
+        if (!response.ok) {
+            throw new Error(
+                `Erro no serviço de mapas: HTTP ${response.status}.`
+            );
+        }
+
+        const dados = await response.json();
+
+        console.log("RESULTADO NOMINATIM:", dados);
+
+        return Array.isArray(dados) ? dados : [];
     }
 
+    let resultados = [];
+
+    // -----------------------------------------
+    // 3. PRIMEIRA TENTATIVA: BUSCAR PELO CEP
+    // -----------------------------------------
+
+    const buscaCep = new URLSearchParams({
+        postalcode: cepLimpo,
+        country: "Brazil",
+        countrycodes: "br",
+        format: "jsonv2",
+        limit: "1"
+    });
+
+    resultados = await consultarNominatim(buscaCep);
+
+    // -----------------------------------------
+    // 4. SEGUNDA TENTATIVA: ENDEREÇO ESTRUTURADO
+    // -----------------------------------------
 
     if (!resultados.length) {
-        throw new Error(
-            "Não foi possível localizar o CEP no mapa."
+
+        // Respeita um intervalo entre as consultas
+        await new Promise(resolve => setTimeout(resolve, 1100));
+
+        const buscaEndereco = new URLSearchParams({
+            city: endereco.localidade || "",
+            state: endereco.uf || "",
+            country: "Brazil",
+            countrycodes: "br",
+            postalcode: cepLimpo,
+            format: "jsonv2",
+            limit: "1"
+        });
+
+        if (endereco.logradouro) {
+            buscaEndereco.set(
+                "street",
+                endereco.logradouro
+            );
+        }
+
+        resultados = await consultarNominatim(
+            buscaEndereco
         );
     }
 
+    // -----------------------------------------
+    // 5. TERCEIRA TENTATIVA: BUSCA POR TEXTO
+    // -----------------------------------------
+
+    if (!resultados.length) {
+
+        await new Promise(resolve => setTimeout(resolve, 1100));
+
+        const textoEndereco = [
+            endereco.logradouro,
+            endereco.bairro,
+            endereco.localidade,
+            endereco.uf,
+            "Brasil"
+        ]
+            .filter(Boolean)
+            .join(", ");
+
+        const buscaTexto = new URLSearchParams({
+            q: textoEndereco,
+            countrycodes: "br",
+            format: "jsonv2",
+            limit: "1"
+        });
+
+        resultados = await consultarNominatim(buscaTexto);
+    }
+
+    // -----------------------------------------
+    // 6. VERIFICAR SE ENCONTROU COORDENADAS
+    // -----------------------------------------
+
+    if (!resultados.length) {
+        throw new Error(
+            "Não foi possível localizar esse CEP no mapa. O endereço pode não estar indexado no serviço de mapas."
+        );
+    }
+
+    const latitude = Number(resultados[0].lat);
+    const longitude = Number(resultados[0].lon);
+
+    if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude < -180 ||
+        longitude > 180
+    ) {
+        throw new Error(
+            "O serviço de mapas retornou coordenadas inválidas."
+        );
+    }
+
+    // -----------------------------------------
+    // 7. RETORNAR A LOCALIZAÇÃO DE ORIGEM
+    // -----------------------------------------
 
     return {
-
-        cep:
-            endereco.cep,
-
-        logradouro:
-            endereco.logradouro,
-
-        bairro:
-            endereco.bairro,
-
-        cidade:
-            endereco.localidade,
-
-        estado:
-            endereco.uf,
-
-        latitude:
-            Number(
-                resultados[0].lat
-            ),
-
-        longitude:
-            Number(
-                resultados[0].lon
-            )
+        cep: endereco.cep,
+        logradouro: endereco.logradouro,
+        bairro: endereco.bairro,
+        cidade: endereco.localidade,
+        estado: endereco.uf,
+        latitude,
+        longitude
     };
 }
 
 
 // =====================================================
-// PISTAS MAIS PRÓXIMAS
+// PISTAS MAIS PRÓXIMAS DE PRESIDENTE PRUDENTE
 // =====================================================
 
 app.get(
@@ -545,36 +545,33 @@ app.get(
 
         try {
 
-            const {
-                cep
-            } = req.query;
-
+            const { cep } = req.query;
 
             if (!cep) {
-
                 return res.status(400).json({
-                    erro:
-                        "Informe o CEP."
+                    erro: "Informe o CEP."
                 });
             }
 
-
             // -----------------------------------------
-            // LOCALIZAÇÃO DO USUÁRIO
-            // -----------------------------------------
-
-            const origem =
-                await buscarCoordenadasPorCep(
-                    cep
-                );
-
-
-            // -----------------------------------------
-            // BUSCA PISTAS NO BANCO
+            // 1. LOCALIZAR A ORIGEM
             // -----------------------------------------
 
-            db.query(
-                `
+            const origem = await buscarCoordenadasPorCep(
+                cep
+            );
+
+            console.log(
+                "ORIGEM LOCALIZADA:",
+                origem
+            );
+
+            // -----------------------------------------
+            // 2. BUSCAR SOMENTE PISTAS DE PRESIDENTE
+            // PRUDENTE NO BANCO DE DADOS
+            // -----------------------------------------
+
+            const sql = `
                 SELECT
                     id,
                     nome,
@@ -588,172 +585,184 @@ app.get(
                     latitude,
                     longitude
                 FROM pistas
-                WHERE ativo = TRUE
-                `,
-                async (err, pistas) => {
+                WHERE ativo = 1
+                  AND LOWER(TRIM(cidade)) = LOWER(?)
+                  AND UPPER(TRIM(estado)) = 'SP'
+                  AND latitude IS NOT NULL
+                  AND longitude IS NOT NULL
+            `;
+
+            db.query(
+                sql,
+                ["Presidente Prudente"],
+                async (err, pistasBanco) => {
 
                     if (err) {
-
                         console.error(
-                            "❌ ERRO AO BUSCAR PISTAS NO BANCO:",
+                            "ERRO AO BUSCAR PISTAS NO BANCO:",
                             err.message
                         );
 
                         return res.status(500).json({
-                            erro: err.message
+                            erro: "Erro ao consultar as pistas no banco de dados."
                         });
                     }
 
+                    // -----------------------------------------
+                    // 3. VALIDAR COORDENADAS DAS PISTAS
+                    // -----------------------------------------
+
+                    const pistas = pistasBanco.filter(
+                        pista => {
+
+                            const lat = Number(
+                                pista.latitude
+                            );
+
+                            const lng = Number(
+                                pista.longitude
+                            );
+
+                            return (
+                                Number.isFinite(lat) &&
+                                Number.isFinite(lng) &&
+                                lat >= -90 &&
+                                lat <= 90 &&
+                                lng >= -180 &&
+                                lng <= 180
+                            );
+                        }
+                    );
+
+                    console.log(
+                        "PISTAS ENCONTRADAS EM PRESIDENTE PRUDENTE:",
+                        pistas.length
+                    );
 
                     if (!pistas.length) {
-
                         return res.json({
                             origem,
                             pistas: []
                         });
                     }
 
-
                     try {
 
                         // -----------------------------------------
-                        // MONTA COORDENADAS
+                        // 4. MONTAR COORDENADAS PARA O OSRM
                         // -----------------------------------------
 
                         const coordenadas = [
-
                             `${origem.longitude},${origem.latitude}`,
 
                             ...pistas.map(
-                                (pista) =>
-                                    `${pista.longitude},${pista.latitude}`
+                                pista =>
+                                    `${Number(pista.longitude)},${Number(pista.latitude)}`
                             )
-
                         ].join(";");
 
-
                         // -----------------------------------------
-                        // OSRM
-                        // -----------------------------------------
-
-                        const osrmResponse =
-                            await fetch(
-                                `https://router.project-osrm.org/table/v1/driving/${coordenadas}?sources=0&annotations=distance,duration`
-                            );
-
-
-                        if (!osrmResponse.ok) {
-
-                            throw new Error(
-                                "Erro ao acessar o serviço de rotas."
-                            );
-                        }
-
-
-                        const osrm =
-                            await osrmResponse.json();
-
-
-                        if (osrm.code !== "Ok") {
-
-                            throw new Error(
-                                "Erro ao calcular as distâncias."
-                            );
-                        }
-
-
-                        const distancias =
-                            osrm.distances[0];
-
-                        const duracoes =
-                            osrm.durations[0];
-
-
-                        // -----------------------------------------
-                        // ADICIONA DISTÂNCIA E TEMPO
+                        // 5. CALCULAR DISTÂNCIAS E DURAÇÕES
                         // -----------------------------------------
 
-                        const resultado =
-                            pistas.map(
-                                (pista, index) => ({
-
-                                    ...pista,
-
-                                    distancia:
-                                        distancias[
-                                            index + 1
-                                        ],
-
-                                    duracao:
-                                        duracoes[
-                                            index + 1
-                                        ]
-
-                                })
-                            );
-
-
-                        // -----------------------------------------
-                        // ORDENA DA MAIS PRÓXIMA
-                        // -----------------------------------------
-
-                        resultado.sort(
-                            (a, b) =>
-                                a.distancia -
-                                b.distancia
+                        const osrmResponse = await fetch(
+                            `https://router.project-osrm.org/table/v1/driving/${coordenadas}?sources=0&annotations=distance,duration`
                         );
 
+                        if (!osrmResponse.ok) {
+                            throw new Error(
+                                "Erro ao acessar o serviço de cálculo de distâncias."
+                            );
+                        }
+
+                        const osrm = await osrmResponse.json();
+
+                        if (
+                            osrm.code !== "Ok" ||
+                            !osrm.distances ||
+                            !osrm.durations
+                        ) {
+                            throw new Error(
+                                "O serviço de mapas não conseguiu calcular as distâncias."
+                            );
+                        }
+
+                        const distancias = osrm.distances[0];
+                        const duracoes = osrm.durations[0];
+
+                        // -----------------------------------------
+                        // 6. ASSOCIAR DISTÂNCIA E TEMPO ÀS PISTAS
+                        // -----------------------------------------
+
+                        const resultado = pistas.map(
+                            (pista, index) => ({
+                                ...pista,
+
+                                distancia:
+                                    distancias?.[index + 1] ?? null,
+
+                                duracao:
+                                    duracoes?.[index + 1] ?? null
+                            })
+                        );
+
+                        // -----------------------------------------
+                        // 7. ORDENAR DA MAIS PRÓXIMA À MAIS DISTANTE
+                        // -----------------------------------------
+
+                        resultado.sort((a, b) => {
+
+                            const distanciaA =
+                                a.distancia ?? Infinity;
+
+                            const distanciaB =
+                                b.distancia ?? Infinity;
+
+                            return distanciaA - distanciaB;
+                        });
+
+                        // -----------------------------------------
+                        // 8. RETORNAR RESULTADO
+                        // -----------------------------------------
 
                         return res.json({
-
                             origem,
-
-                            pistas:
-                                resultado
-
+                            pistas: resultado
                         });
 
                     } catch (error) {
 
                         console.error(
-                            "❌ ERRO NO OSRM:",
-                            error
+                            "ERRO NO CÁLCULO DAS DISTÂNCIAS:",
+                            error.message
                         );
 
-                        return res.status(500).json({
-
-                            erro:
-                                error.message ||
-                                "Erro ao calcular distâncias."
-
+                        return res.status(502).json({
+                            erro: error.message ||
+                                "Não foi possível calcular as distâncias."
                         });
                     }
-
                 }
             );
 
         } catch (error) {
 
             console.error(
-                "❌ ERRO AO BUSCAR PISTAS:",
-                error
+                "ERRO AO BUSCAR PISTAS:",
+                error.message
             );
 
-            return res.status(500).json({
-
-                erro:
-                    error.message ||
-                    "Erro ao buscar pistas."
-
+            return res.status(400).json({
+                erro: error.message ||
+                    "Não foi possível buscar as pistas."
             });
         }
-
     }
 );
 
 
 // =====================================================
-// ROTA ATÉ A PISTA
+// CALCULAR ROTA ATÉ UMA PISTA
 // =====================================================
 
 app.get(
@@ -769,100 +778,116 @@ app.get(
                 destinoLng
             } = req.query;
 
+            // -----------------------------------------
+            // 1. VALIDAR PARÂMETROS
+            // -----------------------------------------
+
+            const valores = [
+                origemLat,
+                origemLng,
+                destinoLat,
+                destinoLng
+            ];
 
             if (
-                !origemLat ||
-                !origemLng ||
-                !destinoLat ||
-                !destinoLng
+                valores.some(
+                    valor =>
+                        valor === undefined ||
+                        valor === null ||
+                        valor === ""
+                )
             ) {
-
                 return res.status(400).json({
-
-                    erro:
-                        "Coordenadas incompletas."
-
+                    erro: "Informe todas as coordenadas da origem e do destino."
                 });
             }
 
+            const latOrigem = Number(origemLat);
+            const lngOrigem = Number(origemLng);
+            const latDestino = Number(destinoLat);
+            const lngDestino = Number(destinoLng);
+
+            const coordenadasValidas =
+                Number.isFinite(latOrigem) &&
+                Number.isFinite(lngOrigem) &&
+                Number.isFinite(latDestino) &&
+                Number.isFinite(lngDestino) &&
+                latOrigem >= -90 &&
+                latOrigem <= 90 &&
+                latDestino >= -90 &&
+                latDestino <= 90 &&
+                lngOrigem >= -180 &&
+                lngOrigem <= 180 &&
+                lngDestino >= -180 &&
+                lngDestino <= 180;
+
+            if (!coordenadasValidas) {
+                return res.status(400).json({
+                    erro: "Uma ou mais coordenadas são inválidas."
+                });
+            }
+
+            // -----------------------------------------
+            // 2. MONTAR COORDENADAS NO FORMATO DO OSRM
+            // Formato: longitude,latitude
+            // -----------------------------------------
 
             const coordenadas =
+                `${lngOrigem},${latOrigem};` +
+                `${lngDestino},${latDestino}`;
 
-                `${origemLng},${origemLat};` +
-                `${destinoLng},${destinoLat}`;
+            // -----------------------------------------
+            // 3. SOLICITAR A ROTA
+            // -----------------------------------------
 
-
-            const response =
-                await fetch(
-
-                    `https://router.project-osrm.org/route/v1/driving/${coordenadas}?overview=full&geometries=geojson`
-
-                );
-
+            const response = await fetch(
+                `https://router.project-osrm.org/route/v1/driving/${coordenadas}?overview=full&geometries=geojson`
+            );
 
             if (!response.ok) {
-
                 throw new Error(
                     "Erro ao acessar o serviço de rotas."
                 );
             }
 
-
-            const data =
-                await response.json();
-
+            const data = await response.json();
 
             if (
                 data.code !== "Ok" ||
-                !data.routes?.length
+                !data.routes ||
+                !data.routes.length
             ) {
-
                 return res.status(404).json({
-
-                    erro:
-                        "Não foi possível encontrar uma rota."
-
+                    erro: "Não foi possível encontrar uma rota entre esses pontos."
                 });
             }
 
+            // -----------------------------------------
+            // 4. RETORNAR ROTA, DISTÂNCIA E DURAÇÃO
+            // -----------------------------------------
 
-            const rota =
-                data.routes[0];
-
+            const rota = data.routes[0];
 
             return res.json({
-
-                distancia:
-                    rota.distance,
-
-                duracao:
-                    rota.duration,
-
-                geometry:
-                    rota.geometry
-
+                distancia: rota.distance,
+                duracao: rota.duration,
+                geometry: rota.geometry
             });
 
         } catch (error) {
 
             console.error(
-                "❌ ERRO AO CALCULAR ROTA:",
-                error
+                "ERRO AO CALCULAR ROTA:",
+                error.message
             );
 
-            return res.status(500).json({
-
-                erro:
+            return res.status(502).json({
+                erro: error.message ||
                     "Erro ao calcular a rota."
-
             });
         }
-
     }
 );
-
-
-
 const PORT = 3001;
 
 // =========================================
@@ -966,6 +991,43 @@ app.get("/equipamentos", (req, res) => {
 
             return res.status(500).json({
                 erro: "Não foi possível buscar os equipamentos."
+            });
+        }
+
+        return res.status(200).json(resultado);
+    });
+});
+
+// =========================================
+// ROUPAS E ACESSÓRIOS
+// =========================================
+
+app.get("/roupas", (req, res) => {
+    const sql = `
+        SELECT
+            id,
+            nome,
+            categoria,
+            faixa,
+            descricao,
+            produto_url,
+            imagem_url,
+            icone,
+            ordem
+        FROM roupas
+        WHERE ativo = 1
+        ORDER BY ordem ASC, id ASC
+    `;
+
+    db.query(sql, (err, resultado) => {
+        if (err) {
+            console.error(
+                "Erro ao buscar roupas:",
+                err.message
+            );
+
+            return res.status(500).json({
+                erro: "Não foi possível buscar as roupas."
             });
         }
 

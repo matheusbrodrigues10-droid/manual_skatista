@@ -1,4 +1,4 @@
-import Roupas from "../../components/Roupas";
+import Roupas from "@/components/Roupas";
 
 export default function RoupasPage() {
     return <Roupas />;

@@ -1,266 +1,313 @@
 "use client";
 
-import { useState } from "react";
-import PageHeader from "./PageHeader";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import PageHeader from "@/components/PageHeader";
 
-const ROUPAS_DEMO = [
-    {
-        id: 1,
-        marca: "Thrasher",
-        nome: "Camiseta Flame Logo",
-        categoria: "camiseta",
-        desc: "Algodão pesado, gola careca, fit relaxado.",
-        imagem: null,
-        badge: "hot",
-        uso_count: 847,
-        lojas_online: [
-            {
-                nome: "Thrasher Store",
-                url: "https://thrashermagazine.com"
-            }
-        ],
-        lojas_fisicas:
-            "Skate shops em São Paulo e Rio de Janeiro"
-    },
-
-    {
-        id: 2,
-        marca: "Vans",
-        nome: "SK8-Hi MTE-2",
-        categoria: "tenis",
-        desc: "Cano alto com forro de lã sintética.",
-        imagem: null,
-        badge: "trending",
-        uso_count: 612,
-        lojas_online: [
-            {
-                nome: "Vans Brasil",
-                url: "https://vans.com.br"
-            }
-        ],
-        lojas_fisicas:
-            "Lojas Vans e Centauro em todo Brasil"
-    }
+const categorias = [
+    { valor: "todos", texto: "👁 Todo" },
+    { valor: "camiseta", texto: "👕 Camisetas" },
+    { valor: "moletom", texto: "🧥 Moletons" },
+    { valor: "shorts", texto: "🩳 Shorts" },
+    { valor: "calca", texto: "👖 Calças" },
+    { valor: "tenis", texto: "👟 Tênis" },
+    { valor: "acessorios", texto: "🧢 Acessórios" }
 ];
 
-const CATEGORIAS = [
-    {
-        key: "todos",
-        label: "Tudo",
-        icon: "👁️"
-    },
-    {
-        key: "camiseta",
-        label: "Camisetas",
-        icon: "👕"
-    },
-    {
-        key: "short",
-        label: "Shorts",
-        icon: "🩳"
-    },
-    {
-        key: "calca",
-        label: "Calças",
-        icon: "👖"
-    },
-    {
-        key: "moletom",
-        label: "Moletons",
-        icon: "🧥"
-    },
-    {
-        key: "tenis",
-        label: "Tênis",
-        icon: "👟"
-    },
-    {
-        key: "acessorio",
-        label: "Acessórios",
-        icon: "🧢"
-    }
+const faixas = [
+    { valor: "todas", texto: "Todas as faixas" },
+    { valor: "custo_beneficio", texto: "Custo-benefício" },
+    { valor: "intermediario", texto: "Intermediário" },
+    { valor: "premium", texto: "Avançado / Premium" }
 ];
+
+const nomesCategoria = {
+    camiseta: "Camisetas",
+    moletom: "Moletons",
+    shorts: "Shorts / Bermudas",
+    calca: "Calças",
+    tenis: "Tênis",
+    bone: "Bonés",
+    touca: "Toucas / Gorros"
+};
+
+const nomesFaixa = {
+    custo_beneficio: "Custo-benefício",
+    intermediario: "Intermediário",
+    premium: "Avançado / Premium"
+};
+
+function ImagemRoupa({ roupa }) {
+    const [falhou, setFalhou] = useState(false);
+
+    if (!roupa.imagem_url || falhou) {
+        return (
+            <div className="roupa-imagem-placeholder">
+                <span>{roupa.icone || "👕"}</span>
+                <small>Imagem não cadastrada</small>
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={roupa.imagem_url}
+            alt={roupa.nome}
+            className="roupa-imagem"
+            loading="lazy"
+            onError={() => setFalhou(true)}
+        />
+    );
+}
 
 export default function Roupas() {
-    const [filtro, setFiltro] = useState("todos");
-    const [produto, setProduto] = useState(null);
+    const router = useRouter();
 
-    const lista =
-        filtro === "todos"
-            ? ROUPAS_DEMO
-            : ROUPAS_DEMO.filter(
-                  (produto) =>
-                      produto.categoria === filtro
-              );
+    const [roupas, setRoupas] = useState([]);
+    const [categoria, setCategoria] = useState("todos");
+    const [faixa, setFaixa] = useState("todas");
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState("");
+
+    useEffect(() => {
+        let ativa = true;
+
+        async function carregarRoupas() {
+            try {
+                const response = await fetch(
+                    "/api/roupas",
+                    { cache: "no-store" }
+                );
+
+                if (response.status === 401) {
+                    router.replace(
+                        "/login?redirect=%2Froupas"
+                    );
+                    return;
+                }
+
+                const dados = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        dados.erro ||
+                        "Não foi possível carregar as roupas."
+                    );
+                }
+
+                if (ativa) {
+                    setRoupas(
+                        Array.isArray(dados) ? dados : []
+                    );
+                }
+
+            } catch (error) {
+                console.error(
+                    "Erro ao carregar roupas:",
+                    error
+                );
+
+                if (ativa) {
+                    setErro(
+                        error.message ||
+                        "Erro ao carregar as roupas."
+                    );
+                }
+
+            } finally {
+                if (ativa) {
+                    setCarregando(false);
+                }
+            }
+        }
+
+        carregarRoupas();
+
+        return () => {
+            ativa = false;
+        };
+    }, [router]);
+
+    const roupasFiltradas = useMemo(() => {
+        return roupas.filter((roupa) => {
+            const categoriaCorreta =
+                categoria === "todos" ||
+                (
+                    categoria === "acessorios"
+                        ? ["bone", "touca"].includes(
+                            roupa.categoria
+                        )
+                        : roupa.categoria === categoria
+                );
+
+            const faixaCorreta =
+                faixa === "todas" ||
+                roupa.faixa === faixa;
+
+            return categoriaCorreta && faixaCorreta;
+        });
+    }, [roupas, categoria, faixa]);
 
     return (
         <>
             <PageHeader
                 icon="👕"
                 titulo="Roupas"
-                descricao="As marcas que entendem a cultura. Estilo e conforto para você arrasar na pista."
+                descricao="As marcas que entendem a cultura. Estilo e conforto para você andar de skate."
             />
 
-            <div className="catalog-layout">
+            <main className="roupas-conteudo">
+                <div className="roupas-layout">
 
-                <aside className="sidebar">
+                    <aside className="roupas-sidebar">
+                        <div className="roupas-sidebar-titulo">
+                            ☰ FILTROS
+                        </div>
 
-                    <div className="sidebar-header">
-                        <span className="sidebar-title">
-                            ☰ Filtros
-                        </span>
-                    </div>
+                        <div className="roupas-sidebar-secao">
+                            <h3>Categoria</h3>
 
-                    <div className="sidebar-body">
-
-                        <div className="filter-group">
-
-                            <div className="filter-group-title">
-                                Categoria
-                            </div>
-
-                            {CATEGORIAS.map(
-                                (categoria) => (
+                            <nav aria-label="Categorias de roupas">
+                                {categorias.map((item) => (
                                     <button
-                                        key={categoria.key}
-                                        className={`filter-btn ${
-                                            filtro ===
-                                            categoria.key
-                                                ? "active"
+                                        key={item.valor}
+                                        type="button"
+                                        className={`roupas-categoria ${
+                                            categoria === item.valor
+                                                ? "roupas-categoria-ativa"
                                                 : ""
                                         }`}
                                         onClick={() =>
-                                            setFiltro(
-                                                categoria.key
-                                            )
+                                            setCategoria(item.valor)
+                                        }
+                                        aria-pressed={
+                                            categoria === item.valor
                                         }
                                     >
-                                        {categoria.icon}{" "}
-                                        {categoria.label}
+                                        {item.texto}
                                     </button>
-                                )
+                                ))}
+                            </nav>
+                        </div>
+
+                        <div className="roupas-sidebar-secao">
+                            <h3>Faixa</h3>
+
+                            <label
+                                htmlFor="filtro-faixa"
+                                className="roupas-label"
+                            >
+                                Estilo / posicionamento
+                            </label>
+
+                            <select
+                                id="filtro-faixa"
+                                value={faixa}
+                                onChange={(event) =>
+                                    setFaixa(event.target.value)
+                                }
+                                className="roupas-select"
+                            >
+                                {faixas.map((item) => (
+                                    <option
+                                        key={item.valor}
+                                        value={item.valor}
+                                    >
+                                        {item.texto}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </aside>
+
+                    <section className="roupas-resultados">
+                        <div className="roupas-resultados-topo">
+                            <p>
+                                <strong>
+                                    {roupasFiltradas.length}
+                                </strong>{" "}
+                                {roupasFiltradas.length === 1
+                                    ? "peça encontrada"
+                                    : "peças encontradas"}
+                            </p>
+                        </div>
+
+                        {carregando && (
+                            <p className="roupas-mensagem">
+                                Carregando roupas...
+                            </p>
+                        )}
+
+                        {!carregando && erro && (
+                            <p className="roupas-erro">
+                                ❌ {erro}
+                            </p>
+                        )}
+
+                        {!carregando &&
+                            !erro &&
+                            roupasFiltradas.length === 0 && (
+                                <p className="roupas-mensagem">
+                                    Nenhuma peça encontrada para esses filtros.
+                                </p>
                             )}
 
-                        </div>
+                        {!carregando &&
+                            !erro &&
+                            roupasFiltradas.length > 0 && (
+                                <div className="roupas-grid">
+                                    {roupasFiltradas.map((roupa) => (
+                                        <article
+                                            key={roupa.id}
+                                            className="roupa-card"
+                                        >
+                                            <a
+                                                href={roupa.produto_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="roupa-imagem-link"
+                                                aria-label={`Ver ${roupa.nome} na loja`}
+                                            >
+                                                <ImagemRoupa roupa={roupa} />
+                                            </a>
 
-                    </div>
+                                            <div className="roupa-card-corpo">
+                                                <span className="roupa-marca">
+                                                    MANUAL DO SKATISTA
+                                                </span>
 
-                </aside>
+                                                <h2>{roupa.nome}</h2>
 
-                <div className="catalog-main">
+                                                <span className="roupa-badge-categoria">
+                                                    {nomesCategoria[roupa.categoria]}
+                                                </span>
 
-                    <div className="catalog-toolbar">
-                        <span className="catalog-count">
-                            <strong>
-                                {lista.length}
-                            </strong>{" "}
-                            peças encontradas
-                        </span>
-                    </div>
+                                                <span
+                                                    className={`roupa-badge-faixa roupa-faixa-${roupa.faixa}`}
+                                                >
+                                                    {nomesFaixa[roupa.faixa]}
+                                                </span>
 
-                    <div className="products-grid">
+                                                <p className="roupa-descricao">
+                                                    {roupa.descricao}
+                                                </p>
 
-                        {lista.map((produto) => (
-                            <div
-                                className="product-card"
-                                key={produto.id}
-                                onClick={() =>
-                                    setProduto(produto)
-                                }
-                            >
-
-                                <div className="product-img-wrap">
-
-                                    {produto.imagem ? (
-                                        <img
-                                            src={produto.imagem}
-                                            alt={produto.nome}
-                                        />
-                                    ) : (
-                                        <div className="product-img-placeholder">
-                                            👕
-                                        </div>
-                                    )}
-
+                                                <a
+                                                    href={roupa.produto_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="roupa-link-produto"
+                                                >
+                                                    VER NA LOJA ↗
+                                                </a>
+                                            </div>
+                                        </article>
+                                    ))}
                                 </div>
-
-                                <div className="product-info">
-
-                                    <div className="product-brand">
-                                        {produto.marca}
-                                    </div>
-
-                                    <div className="product-name">
-                                        {produto.nome}
-                                    </div>
-
-                                    <div className="product-category-tag">
-                                        {
-                                            CATEGORIAS.find(
-                                                (x) =>
-                                                    x.key ===
-                                                    produto.categoria
-                                            )?.label
-                                        }
-                                    </div>
-
-                                    <div className="product-desc">
-                                        {produto.desc}
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        ))}
-
-                    </div>
-
+                            )}
+                    </section>
                 </div>
-
-            </div>
-
-            {produto && (
-                <div
-                    className="modal-overlay open"
-                    onClick={() => setProduto(null)}
-                >
-
-                    <div
-                        className="modal-box"
-                        onClick={(event) =>
-                            event.stopPropagation()
-                        }
-                    >
-
-                        <button
-                            className="modal-close"
-                            onClick={() =>
-                                setProduto(null)
-                            }
-                        >
-                            ✕
-                        </button>
-
-                        <div className="product-brand">
-                            {produto.marca}
-                        </div>
-
-                        <h2>
-                            {produto.nome}
-                        </h2>
-
-                        <p className="sobre-text">
-                            {produto.desc}
-                        </p>
-
-                        <p className="sobre-text">
-                            📍 {produto.lojas_fisicas}
-                        </p>
-
-                    </div>
-
-                </div>
-            )}
+            </main>
         </>
     );
 }

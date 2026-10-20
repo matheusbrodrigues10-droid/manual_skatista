@@ -1695,3 +1695,321 @@ a {
         height: 230px;
     }
 }
+
+/* =========================================
+   ROUPAS - LAYOUT E FILTROS
+========================================= */
+
+.roupas-conteudo {
+    width: calc(100% - 40px);
+    max-width: 990px;
+    margin: 0 auto;
+    padding: 30px 0 70px;
+}
+
+.roupas-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: start;
+    gap: 28px;
+}
+
+.roupas-sidebar {
+    overflow: hidden;
+    background: #1e1e1e;
+    border: 1px solid #303030;
+    border-radius: 8px;
+}
+
+.roupas-sidebar-titulo {
+    padding: 17px 18px;
+    color: #f5f5f5;
+    background: #171717;
+    border-bottom: 1px solid #303030;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.roupas-sidebar-secao {
+    padding: 20px 18px;
+}
+
+.roupas-sidebar-secao h3 {
+    margin: 0 0 14px;
+    color: #D72638;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.roupas-sidebar-secao nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.roupas-categoria {
+    width: 100%;
+    padding: 9px 10px;
+    color: #bbb;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.82rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.roupas-categoria:hover {
+    color: #fff;
+    background: #292929;
+}
+
+.roupas-categoria-ativa {
+    color: #fff;
+    background: rgba(215, 38, 56, 0.18);
+}
+
+.roupas-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #999;
+    font-size: 0.75rem;
+}
+
+.roupas-select {
+    width: 100%;
+    padding: 10px 9px;
+    color: #eee;
+    background: #151515;
+    border: 1px solid #353535;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.78rem;
+}
+
+.roupas-select option {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+
+/* =========================================
+   RESULTADOS E CARTÕES
+========================================= */
+
+.roupas-resultados {
+    min-width: 0;
+}
+
+.roupas-resultados-topo {
+    margin: 0 0 20px;
+}
+
+.roupas-resultados-topo p {
+    margin: 0;
+    color: #999;
+    font-size: 0.84rem;
+}
+
+.roupas-resultados-topo strong {
+    color: #f5f5f5;
+}
+
+.roupas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.roupa-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #1e1e1e;
+    border: 1px solid #303030;
+    border-radius: 8px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.roupa-card:hover {
+    transform: translateY(-3px);
+    border-color: #D72638;
+}
+
+.roupa-imagem-link {
+    display: block;
+    background: #151515;
+    text-decoration: none;
+}
+
+.roupa-imagem {
+    display: block;
+    width: 100%;
+    height: 220px;
+    padding: 12px;
+    object-fit: contain;
+    background: #f5f5f5;
+}
+
+.roupa-imagem-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 220px;
+    padding: 15px;
+    color: #777;
+    background: #151515;
+}
+
+.roupa-imagem-placeholder span {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.roupa-imagem-placeholder small {
+    font-size: 0.69rem;
+    text-align: center;
+}
+
+.roupa-card-corpo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 225px;
+    padding: 15px;
+}
+
+.roupa-marca {
+    margin-bottom: 8px;
+    color: #D72638;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.roupa-card h2 {
+    margin: 0 0 12px;
+    color: #f5f5f5;
+    font-size: 0.91rem;
+    line-height: 1.45;
+}
+
+.roupa-badge-categoria,
+.roupa-badge-faixa {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 4px 7px;
+    border-radius: 2px;
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.roupa-badge-categoria {
+    width: 100%;
+    color: #ddd;
+    background: #303030;
+}
+
+.roupa-faixa-custo_beneficio {
+    color: #28d17c;
+    background: rgba(40, 209, 124, 0.12);
+}
+
+.roupa-faixa-intermediario {
+    color: #ffc247;
+    background: rgba(255, 194, 71, 0.12);
+}
+
+.roupa-faixa-premium {
+    color: #c3a5ff;
+    background: rgba(144, 112, 255, 0.15);
+}
+
+.roupa-descricao {
+    margin: 10px 0 17px;
+    color: #999;
+    font-size: 0.78rem;
+    line-height: 1.65;
+    flex: 1;
+}
+
+.roupa-link-produto {
+    display: inline-block;
+    margin-top: auto;
+    padding-top: 10px;
+    color: #ff5263;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+}
+
+.roupa-link-produto:hover {
+    text-decoration: underline;
+}
+
+.roupas-mensagem,
+.roupas-erro {
+    padding: 16px;
+    border-radius: 6px;
+}
+
+.roupas-mensagem {
+    color: #aaa;
+    background: #1e1e1e;
+    border: 1px solid #303030;
+}
+
+.roupas-erro {
+    color: #ff5263;
+    background: rgba(215, 38, 56, 0.08);
+    border: 1px solid rgba(215, 38, 56, 0.25);
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 760px) {
+    .roupas-layout {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .roupas-sidebar-secao {
+        padding: 16px;
+    }
+
+    .roupas-sidebar-secao nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .roupas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .roupas-conteudo {
+        width: calc(100% - 28px);
+        padding-top: 24px;
+    }
+
+    .roupas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .roupa-imagem,
+    .roupa-imagem-placeholder {
+        height: 250px;
+    }
+}
