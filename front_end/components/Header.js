@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function Header() {
     const [usuario, setUsuario] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [saindo, setSaindo] = useState(false);
 
     const router = useRouter();
 
@@ -18,7 +19,7 @@ export default function Header() {
 
             if (response.ok) {
                 const data = await response.json();
-                setUsuario(data.usuario);
+                setUsuario(data.usuario ?? null);
             } else {
                 setUsuario(null);
             }
@@ -33,9 +34,9 @@ export default function Header() {
     useEffect(() => {
         carregarUsuario();
 
-        const handleLogin = () => {
+        function handleLogin() {
             carregarUsuario();
-        };
+        }
 
         window.addEventListener("usuarioLogou", handleLogin);
 
@@ -48,43 +49,39 @@ export default function Header() {
     }, []);
 
     async function logout() {
+        if (saindo) return;
+
+        setSaindo(true);
+
         try {
-            await fetch("/api/auth/logout", {
-                method: "POST"
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                cache: "no-store"
             });
 
+            if (!response.ok) {
+                throw new Error("Não foi possível encerrar a sessão.");
+            }
+
+            // Atualiza a interface após o logout
             setUsuario(null);
 
-            router.push("/");
+            // Avisa outras partes da aplicação
+            window.dispatchEvent(new Event("usuarioDeslogou"));
+
+            // Retorna à página inicial
+            router.replace("/");
             router.refresh();
 
         } catch (error) {
-            console.error("Erro ao sair:", error);
+            console.error("Erro ao sair da conta:", error);
+
+            alert(
+                "Não foi possível sair da conta. Tente novamente."
+            );
+        } finally {
+            setSaindo(false);
         }
-    }
-
-    if (carregando) {
-        return (
-            <header className="header">
-                <nav className="nav-container">
-
-                    <Link href="/" className="logo">
-                        🛹 Manual do Skatista
-                    </Link>
-
-                    <div className="nav-menu">
-                        <Link href="/">
-                            Início
-                        </Link>
-
-                        <Link href="/sobre">
-                            Sobre
-                        </Link>
-                    </div>
-
-                </nav>
-            </header>
-        );
     }
 
     return (
@@ -105,26 +102,30 @@ export default function Header() {
                         Sobre
                     </Link>
 
-                    {usuario ? (
-                        <>
-                            <span className="user-name">
-                                👤 {usuario.nome}
-                            </span>
+                    {!carregando && (
+                        usuario ? (
+                            <>
+                                <span className="user-name">
+                                    BEM-VINDO, {usuario.nome}
+                                </span>
 
-                            <button
-                                className="btn-sair"
-                                onClick={logout}
+                                <button
+                                    type="button"
+                                    className="btn-sair"
+                                    onClick={logout}
+                                    disabled={saindo}
+                                >
+                                    {saindo ? "Saindo..." : "Sair"}
+                                </button>
+                            </>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="btn-entrar"
                             >
-                                Sair
-                            </button>
-                        </>
-                    ) : (
-                        <Link
-                            href="/login"
-                            className="btn-entrar"
-                        >
-                            Entrar
-                        </Link>
+                                Entrar
+                            </Link>
+                        )
                     )}
 
                 </div>

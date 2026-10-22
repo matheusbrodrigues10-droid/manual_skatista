@@ -35,5 +35,27 @@ export default function Page() {
         return null;
     }
 
-    return <Home usuario={usuario} />;
+    return <Home
+    usuario={usuario}
+    onLogout={sairDaConta} />;
+
+    async function sairDaConta() {
+    try {
+        const resposta = await fetch("/api/auth/logout", {
+            method: "POST",
+            cache: "no-store"
+        });
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível encerrar a sessão.");
+        }
+
+        // Atualiza a tela para o estado deslogado
+        setUsuario(null);
+
+    } catch (erro) {
+        console.error("Erro ao sair da conta:", erro);
+        alert("Não foi possível sair da conta. Tente novamente.");
+    }
+}
 }

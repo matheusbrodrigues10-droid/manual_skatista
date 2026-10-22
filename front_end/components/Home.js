@@ -44,7 +44,7 @@ export default function Home({ usuario }) {
                     </div>
 
                     <h2>
-                        E aí, <em>{usuario?.nome}</em>! 🛹
+                        E aí, <em>{usuario?.nome || "Skatista"}</em>! 🛹
                     </h2>
 
                     <p>
@@ -54,34 +54,52 @@ export default function Home({ usuario }) {
             )}
 
             <div className="stat-strip">
-                <div className="stat-strip-inner">
-                    <div className="stat-item">
-                        <span className="stat-number">12K+</span>
-                        <span className="stat-label">Skatistas</span>
-                    </div>
+    <div className="stat-strip-inner">
 
-                    <div className="stat-divider"></div>
+        <div className="stat-item">
+            <span className="stat-number stat-text">
+                Do zero ao avançado
+            </span>
+            <span className="stat-label">
+                EVOLUA NO SKATE
+            </span>
+        </div>
 
-                    <div className="stat-item">
-                        <span className="stat-number">340+</span>
-                        <span className="stat-label">Manobras</span>
-                    </div>
+        <div className="stat-divider"></div>
 
-                    <div className="stat-divider"></div>
+        <div className="stat-item">
+            <span className="stat-number stat-text">
+                Manobras para todos os níveis
+            </span>
+            <span className="stat-label">
+                INICIANTE AO AVANÇADO
+            </span>
+        </div>
 
-                    <div className="stat-item">
-                        <span className="stat-number">80+</span>
-                        <span className="stat-label">Pistas mapeadas</span>
-                    </div>
+        <div className="stat-divider"></div>
 
-                    <div className="stat-divider"></div>
+        <div className="stat-item">
+            <span className="stat-number stat-text">
+                Dicas e mais
+            </span>
+            <span className="stat-label">
+                APRENDA E EVOLUA
+            </span>
+        </div>
 
-                    <div className="stat-item">
-                        <span className="stat-number">100%</span>
-                        <span className="stat-label">Gratuito</span>
-                    </div>
-                </div>
-            </div>
+        <div className="stat-divider"></div>
+
+        <div className="stat-item">
+            <span className="stat-number">
+                100%
+            </span>
+            <span className="stat-label">
+                GRATUITO
+            </span>
+        </div>
+
+    </div>
+</div>
 
             <section className="services-section">
                 <div className="section-label">
@@ -184,22 +202,22 @@ export default function Home({ usuario }) {
                     </Link>
 
                     <Link
-                        href="/videos"
-                        className="service-card"
-                    >
-                        <span className="service-icon">🎥</span>
+    href="/videos"
+    className="service-card"
+>
+    <span className="service-icon">🛹</span>
 
-                        <h3>Vídeos</h3>
+    <h3>Dicas e Lifestyle</h3>
 
-                        <p>
-                            Coletâneas, edits e filmagens das
-                            melhores sessões da comunidade.
-                        </p>
+    <p>
+        Conheça vivências de skatistas, sessões de rua
+        e dicas para evoluir nas manobras.
+    </p>
 
-                        <div className="card-arrow">
-                            Assistir →
-                        </div>
-                    </Link>
+    <div className="card-arrow">
+        Explorar vídeos →
+    </div>
+</Link>
                 </div>
             </section>
 
