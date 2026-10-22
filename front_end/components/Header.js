@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Header() {
     const [usuario, setUsuario] = useState(null);
@@ -89,8 +90,17 @@ export default function Header() {
             <nav className="nav-container">
 
                 <Link href="/" className="logo">
-                    🛹 Manual do Skatista
-                </Link>
+    <Image
+        src="/images/logo-ms.png"
+        alt="Logo MS do Manual do Skatista"
+        width={42}
+        height={42}
+        className="logo-mark"
+        priority
+    />
+
+    <span>MANUAL DO SKATISTA</span>
+</Link>
 
                 <div className="nav-menu">
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home({ usuario }) {
     return (
@@ -9,11 +10,16 @@ export default function Home({ usuario }) {
                         Do iniciante ao avançado
                     </div>
 
-                    <h1>
-                        Manual do
-                        <br />
-                        <em>Skatista</em>
-                    </h1>
+                    <div className="hero-logo-wrap">
+    <Image
+        src="/images/logo-manual-skatista.png"
+        alt="Manual do Skatista"
+        width={600}
+        height={400}
+        className="hero-logo"
+        priority
+    />
+</div>
 
                     <p>
                         Seu guia completo para dominar o skate.
