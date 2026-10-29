@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,15 +12,15 @@ export default function Home({ usuario }) {
                     </div>
 
                     <div className="hero-logo-wrap">
-    <Image
-        src="/images/logo-manual-skatista.png"
-        alt="Manual do Skatista"
-        width={600}
-        height={400}
-        className="hero-logo"
-        priority
-    />
-</div>
+                        <Image
+                            src="/images/logo-manual-skatista.png"
+                            alt="Manual do Skatista"
+                            width={600}
+                            height={400}
+                            className="hero-logo"
+                            priority
+                        />
+                    </div>
 
                     <p>
                         Seu guia completo para dominar o skate.
@@ -50,8 +51,24 @@ export default function Home({ usuario }) {
                     </div>
 
                     <h2>
-                        E aí, <em>{usuario?.nome || "Skatista"}</em>! 🛹
+                        E aí,{" "}
+                        <em>
+                            {usuario?.nome || "Skatista"}
+                        </em>
+                        ! 🛹
                     </h2>
+
+                    {/* A logo continua visível após o login */}
+                    <div className="hero-logo-wrap welcome-logo-wrap">
+                        <Image
+                            src="/images/logo-manual-skatista.png"
+                            alt="Manual do Skatista"
+                            width={600}
+                            height={400}
+                            className="hero-logo"
+                            priority
+                        />
+                    </div>
 
                     <p>
                         Pronto para evoluir no skate hoje?
@@ -60,52 +77,56 @@ export default function Home({ usuario }) {
             )}
 
             <div className="stat-strip">
-    <div className="stat-strip-inner">
+                <div className="stat-strip-inner">
 
-        <div className="stat-item">
-            <span className="stat-number stat-text">
-                Do zero ao avançado
-            </span>
-            <span className="stat-label">
-                EVOLUA NO SKATE
-            </span>
-        </div>
+                    <div className="stat-item">
+                        <span className="stat-number stat-text">
+                            Do zero ao avançado
+                        </span>
 
-        <div className="stat-divider"></div>
+                        <span className="stat-label">
+                            EVOLUA NO SKATE
+                        </span>
+                    </div>
 
-        <div className="stat-item">
-            <span className="stat-number stat-text">
-                Manobras para todos os níveis
-            </span>
-            <span className="stat-label">
-                INICIANTE AO AVANÇADO
-            </span>
-        </div>
+                    <div className="stat-divider"></div>
 
-        <div className="stat-divider"></div>
+                    <div className="stat-item">
+                        <span className="stat-number stat-text">
+                            Manobras para todos os níveis
+                        </span>
 
-        <div className="stat-item">
-            <span className="stat-number stat-text">
-                Dicas e mais
-            </span>
-            <span className="stat-label">
-                APRENDA E EVOLUA
-            </span>
-        </div>
+                        <span className="stat-label">
+                            INICIANTE AO AVANÇADO
+                        </span>
+                    </div>
 
-        <div className="stat-divider"></div>
+                    <div className="stat-divider"></div>
 
-        <div className="stat-item">
-            <span className="stat-number">
-                100%
-            </span>
-            <span className="stat-label">
-                GRATUITO
-            </span>
-        </div>
+                    <div className="stat-item">
+                        <span className="stat-number stat-text">
+                            Dicas e mais
+                        </span>
 
-    </div>
-</div>
+                        <span className="stat-label">
+                            APRENDA E EVOLUA
+                        </span>
+                    </div>
+
+                    <div className="stat-divider"></div>
+
+                    <div className="stat-item">
+                        <span className="stat-number">
+                            100%
+                        </span>
+
+                        <span className="stat-label">
+                            GRATUITO
+                        </span>
+                    </div>
+
+                </div>
+            </div>
 
             <section className="services-section">
                 <div className="section-label">
@@ -117,11 +138,14 @@ export default function Home({ usuario }) {
                 </h2>
 
                 <div className="services-grid">
+
                     <Link
                         href="/manobras"
                         className="service-card"
                     >
-                        <span className="service-icon">🛹</span>
+                        <span className="service-icon">
+                            🛹
+                        </span>
 
                         <h3>Manobras</h3>
 
@@ -139,7 +163,9 @@ export default function Home({ usuario }) {
                         href="/montagem"
                         className="service-card"
                     >
-                        <span className="service-icon">🔧</span>
+                        <span className="service-icon">
+                            🔧
+                        </span>
 
                         <h3>Montagem</h3>
 
@@ -157,7 +183,9 @@ export default function Home({ usuario }) {
                         href="/pistas"
                         className="service-card"
                     >
-                        <span className="service-icon">📍</span>
+                        <span className="service-icon">
+                            📍
+                        </span>
 
                         <h3>Pistas</h3>
 
@@ -175,7 +203,9 @@ export default function Home({ usuario }) {
                         href="/equipamentos"
                         className="service-card"
                     >
-                        <span className="service-icon">⭐</span>
+                        <span className="service-icon">
+                            ⭐
+                        </span>
 
                         <h3>Equipamentos</h3>
 
@@ -193,7 +223,9 @@ export default function Home({ usuario }) {
                         href="/roupas"
                         className="service-card"
                     >
-                        <span className="service-icon">👕</span>
+                        <span className="service-icon">
+                            👕
+                        </span>
 
                         <h3>Roupas</h3>
 
@@ -208,22 +240,26 @@ export default function Home({ usuario }) {
                     </Link>
 
                     <Link
-    href="/videos"
-    className="service-card"
->
-    <span className="service-icon">🛹</span>
+                        href="/videos"
+                        className="service-card"
+                    >
+                        <span className="service-icon">
+                            🛹
+                        </span>
 
-    <h3>Dicas e Lifestyle</h3>
+                        <h3>Dicas e Lifestyle</h3>
 
-    <p>
-        Conheça vivências de skatistas, sessões de rua
-        e dicas para evoluir nas manobras.
-    </p>
+                        <p>
+                            Conheça vivências de skatistas,
+                            sessões de rua e dicas para evoluir
+                            nas manobras.
+                        </p>
 
-    <div className="card-arrow">
-        Explorar vídeos →
-    </div>
-</Link>
+                        <div className="card-arrow">
+                            Explorar vídeos →
+                        </div>
+                    </Link>
+
                 </div>
             </section>
 

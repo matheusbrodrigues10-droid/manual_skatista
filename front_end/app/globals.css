@@ -2211,3 +2211,68 @@ a {
     height: auto;
     object-fit: contain;
 }
+
+/* =========================================
+   HOME - BOAS-VINDAS E LOGO PRINCIPAL
+========================================= */
+
+.home-hero-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    color: #D72638;
+    background: rgba(215, 38, 56, 0.08);
+    border: 1px solid rgba(215, 38, 56, 0.35);
+    border-radius: 3px;
+
+    font-family: "Oswald", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.home-hero-welcome {
+    margin: 18px 0 12px;
+
+    color: #f5f5f5;
+    font-family: "Oswald", sans-serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.home-hero-welcome em {
+    color: #D72638;
+    font-style: normal;
+}
+
+.home-hero-logo {
+    display: block;
+    width: min(78vw, 340px);
+    max-height: 270px;
+    height: auto;
+    margin: 20px auto 16px;
+    object-fit: contain;
+}
+
+.home-hero-description {
+    max-width: 600px;
+    margin: 12px auto 0;
+
+    color: #b0b0b0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .home-hero-welcome {
+        font-size: 2rem;
+    }
+
+    .home-hero-logo {
+        width: min(78vw, 280px);
+        max-height: 230px;
+    }
+}
