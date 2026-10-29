@@ -2276,3 +2276,324 @@ a {
         max-height: 230px;
     }
 }
+
+/* =====================================
+   PÁGINA SOBRE NÓS
+===================================== */
+
+.sobre-container {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 42px 0 76px;
+    color: #f5f5f5;
+}
+
+.sobre-container p {
+    margin: 0 0 16px;
+    color: #c6c6c6;
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+.sobre-kicker {
+    display: inline-block;
+    margin-bottom: 13px;
+    color: #D72638;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.sobre-intro {
+    margin-bottom: 54px;
+    padding: 32px;
+    background: linear-gradient(135deg, #1b1718, #121212);
+    border-left: 4px solid #D72638;
+    border-radius: 0 8px 8px 0;
+}
+
+.sobre-intro h2,
+.sobre-section h2,
+.sobre-agradecimento h2 {
+    margin: 0 0 22px;
+    color: #ffffff;
+    font-size: clamp(25px, 3vw, 36px);
+    font-weight: 800;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.sobre-intro h2 em,
+.sobre-section h2 em,
+.sobre-agradecimento h2 em {
+    color: #D72638;
+    font-style: normal;
+}
+
+.sobre-section {
+    margin-top: 54px;
+}
+
+.sobre-section > p {
+    max-width: 1000px;
+}
+
+.sobre-topics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 28px;
+}
+
+.sobre-topic {
+    padding: 23px;
+    background: #1b1b1b;
+    border: 1px solid #303030;
+    border-top: 3px solid #D72638;
+    border-radius: 7px;
+}
+
+.sobre-topic h3 {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.sobre-topic p {
+    margin: 0;
+}
+
+.sobre-observacao {
+    margin-top: 24px !important;
+    padding-left: 15px;
+    border-left: 2px solid #D72638;
+    font-size: 13px !important;
+}
+
+/* Autores */
+
+.sobre-autores-section {
+    margin-top: 66px;
+}
+
+.sobre-autores-intro {
+    max-width: 850px;
+    margin-bottom: 28px !important;
+}
+
+.sobre-autores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 28px;
+    align-items: stretch;
+}
+
+.sobre-autor-card {
+    overflow: hidden;
+    background: #1b1b1b;
+    border: 1px solid #333333;
+    border-top: 3px solid #D72638;
+    border-radius: 8px;
+}
+
+.sobre-autor-foto {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 320px;
+    overflow: hidden;
+    background: #111111;
+    border-bottom: 1px solid #333333;
+}
+
+.sobre-autor-imagem {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.sobre-autor-foto-avatar {
+    background: #f1f1f1;
+}
+
+.sobre-autor-imagem-avatar {
+    object-fit: contain;
+    object-position: center;
+}
+
+.sobre-autor-info {
+    padding: 25px;
+}
+
+.sobre-autor-tipo {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #ff5362;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.sobre-autor-info h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: clamp(20px, 2vw, 25px);
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.sobre-autor-info p {
+    margin-bottom: 14px;
+}
+
+.sobre-autor-info .sobre-autor-idade {
+    margin-bottom: 18px;
+    color: #D72638;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sobre-autor-contribuicao {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #363636;
+}
+
+.sobre-autor-contribuicao h4 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.sobre-autor-contribuicao p {
+    margin-bottom: 0;
+}
+
+.sobre-autor-info .sobre-foto-legenda {
+    margin-top: 15px;
+    margin-bottom: 0;
+    color: #888888;
+    font-size: 12px;
+}
+
+/* Agradecimentos */
+
+.sobre-agradecimento {
+    margin-top: 64px;
+    padding: 30px;
+    background: #171717;
+    border: 1px solid #303030;
+    border-left: 4px solid #D72638;
+    border-radius: 0 8px 8px 0;
+}
+
+.sobre-agradecimento h2 {
+    font-size: clamp(23px, 2.5vw, 30px);
+}
+
+.sobre-agradecimento p {
+    margin-bottom: 0;
+}
+
+/* Responsividade */
+
+@media (max-width: 760px) {
+    .sobre-container {
+        width: calc(100% - 32px);
+        padding-top: 28px;
+    }
+
+    .sobre-intro {
+        padding: 24px 20px;
+    }
+
+    .sobre-topics,
+    .sobre-autores-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sobre-section {
+        margin-top: 42px;
+    }
+
+    .sobre-autor-foto {
+        height: 340px;
+    }
+
+    .sobre-autor-info {
+        padding: 22px;
+    }
+
+    .sobre-agradecimento {
+        margin-top: 44px;
+        padding: 24px 20px;
+    }
+}
+
+@media (max-width: 420px) {
+    .sobre-autor-foto {
+        height: 290px;
+    }
+
+    .sobre-container p {
+        font-size: 14px;
+    }
+}
+
+/* Correção das fotos dos autores */
+
+.sobre-autor-foto {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #1b1b1b;
+}
+
+/* Impede elementos decorativos de cobrir as fotos */
+.sobre-autor-foto::before,
+.sobre-autor-foto::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Exibe a imagem completa, sem cortes */
+.sobre-autor-foto .sobre-autor-imagem {
+    position: relative !important;
+    inset: auto !important;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    z-index: 1;
+}
+
+/* Mantém o fundo da imagem anônima claro */
+.sobre-autor-foto-avatar {
+    background: #f1f1f1;
+}
+
+/* Ajuste para celulares */
+@media (max-width: 760px) {
+    .sobre-autor-foto {
+        height: 380px;
+    }
+}
+
+@media (max-width: 420px) {
+    .sobre-autor-foto {
+        height: 340px;
+    }
+}
