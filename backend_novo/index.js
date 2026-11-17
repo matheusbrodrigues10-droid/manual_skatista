@@ -18,6 +18,7 @@ app.use(
     swaggerUi.serve,
     swaggerUi.setup(swaggerDocument)
 );
+
 // =====================================================
 // FUNÇÕES AUXILIARES
 // =====================================================
@@ -27,6 +28,17 @@ function limparCep(cep) {
         .replace(/\D/g, "");
 }
 
+// Normaliza o e-mail e permite somente endereços @gmail.com.
+function normalizarEmail(email) {
+    return typeof email === "string"
+        ? email.trim().toLowerCase()
+        : "";
+}
+
+function emailGmailValido(email) {
+    const emailNormalizado = normalizarEmail(email);
+    return /^[^\s@]+@gmail\.com$/.test(emailNormalizado);
+}
 
 // =====================================================
 // TESTE DO BACKEND
@@ -38,7 +50,6 @@ app.get("/teste", (req, res) => {
         db: "manual_skatista"
     });
 });
-
 
 // =====================================================
 // CADASTRO
@@ -64,6 +75,14 @@ app.post("/usuarios", (req, res) => {
         });
     }
 
+    const emailNormalizado = normalizarEmail(email);
+
+    if (!emailGmailValido(emailNormalizado)) {
+        return res.status(400).json({
+            erro: "Digite um e-mail válido terminado em @gmail.com."
+        });
+    }
+
     const sql = `
         INSERT INTO usuarios
         (
@@ -81,7 +100,7 @@ app.post("/usuarios", (req, res) => {
         sql,
         [
             nome,
-            email,
+            emailNormalizado,
             senha,
             nivel_id,
             objetivo_id,
@@ -117,7 +136,6 @@ app.post("/usuarios", (req, res) => {
     );
 });
 
-
 // =====================================================
 // OPÇÕES PARA CADASTRO
 // =====================================================
@@ -132,7 +150,6 @@ app.get("/opcoes-cadastro", (req, res) => {
 
     const sqlTempos =
         "SELECT id, descricao FROM tempo_skate";
-
 
     db.query(
         sqlNiveis,
@@ -177,7 +194,6 @@ app.get("/opcoes-cadastro", (req, res) => {
     );
 });
 
-
 // =====================================================
 // BUSCAR USUÁRIOS
 // =====================================================
@@ -204,7 +220,6 @@ app.get("/usuarios", (req, res) => {
     );
 });
 
-
 // =====================================================
 // TEMPOS
 // =====================================================
@@ -225,7 +240,6 @@ app.get("/tempos", (req, res) => {
         }
     );
 });
-
 
 // =====================================================
 // NÍVEIS
@@ -248,7 +262,6 @@ app.get("/niveis", (req, res) => {
     );
 });
 
-
 // =====================================================
 // OBJETIVOS
 // =====================================================
@@ -269,7 +282,6 @@ app.get("/objetivos", (req, res) => {
         }
     );
 });
-
 
 // =====================================================
 // LOGIN
@@ -294,16 +306,24 @@ app.post("/login", (req, res) => {
         });
     }
 
+    const emailNormalizado = normalizarEmail(email);
+
+    if (!emailGmailValido(emailNormalizado)) {
+        return res.status(400).json({
+            erro: "Utilize um e-mail terminado em @gmail.com."
+        });
+    }
+
     const sql = `
         SELECT *
         FROM usuarios
-        WHERE email = ?
+        WHERE LOWER(TRIM(email)) = ?
         AND senha = ?
     `;
 
     db.query(
         sql,
-        [email, senha],
+        [emailNormalizado, senha],
         (err, result) => {
 
             if (err) {
@@ -349,7 +369,6 @@ app.post("/login", (req, res) => {
         }
     );
 });
-
 
 // =====================================================
 // BUSCAR COORDENADAS PELO CEP
@@ -533,7 +552,6 @@ async function buscarCoordenadasPorCep(cep) {
         longitude
     };
 }
-
 
 // =====================================================
 // PISTAS MAIS PRÓXIMAS DE PRESIDENTE PRUDENTE
@@ -760,7 +778,6 @@ app.get(
     }
 );
 
-
 // =====================================================
 // CALCULAR ROTA ATÉ UMA PISTA
 // =====================================================
@@ -888,6 +905,7 @@ app.get(
         }
     }
 );
+
 const PORT = 3001;
 
 // =========================================
