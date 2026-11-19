@@ -1,10 +1,15 @@
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { verificarSessao } from "@/lib/session";
 
 export async function GET() {
     try {
-        const sessao = await verificarSessao();
+        const cookieStore = await cookies();
+
+        const token = cookieStore.get("session")?.value;
+
+        const sessao = verificarSessao(token);
 
         if (!sessao) {
             return NextResponse.json(
@@ -14,14 +19,23 @@ export async function GET() {
         }
 
         const backend =
-            process.env.BACKEND_URL || "http://127.0.0.1:3001";
+            process.env.BACKEND_URL ||
+            "http://127.0.0.1:3001";
+
+        const apiToken =
+            process.env.PROGRESSO_API_TOKEN;
+
+        if (!apiToken) {
+            throw new Error(
+                "PROGRESSO_API_TOKEN não configurado."
+            );
+        }
 
         const response = await fetch(
             `${backend}/videos-lifestyle`,
             {
                 headers: {
-                    "x-progresso-token":
-                        process.env.PROGRESSO_API_TOKEN
+                    "x-progresso-token": apiToken
                 },
                 cache: "no-store"
             }
@@ -34,10 +48,13 @@ export async function GET() {
         });
 
     } catch (erro) {
-        console.error(erro);
+        console.error(
+            "Erro ao carregar Lifestyle:",
+            erro
+        );
 
         return NextResponse.json(
-            { erro: "Erro ao carregar vídeos." },
+            { erro: "Não foi possível carregar os vídeos." },
             { status: 500 }
         );
     }

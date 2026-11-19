@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import ProgressoNivel from "@/components/Progresso";
 
 export default function Home({ usuario }) {
     return (
@@ -58,7 +59,7 @@ export default function Home({ usuario }) {
                         ! 🛹
                     </h2>
 
-                    {/* A logo continua visível após o login */}
+                    {/* Logo do projeto */}
                     <div className="hero-logo-wrap welcome-logo-wrap">
                         <Image
                             src="/images/logo-manual-skatista.png"
@@ -73,6 +74,10 @@ export default function Home({ usuario }) {
                     <p>
                         Pronto para evoluir no skate hoje?
                     </p>
+
+                    {/* PROGRESSÃO DE NÍVEL DO USUÁRIO */}
+                    <ProgressoNivel />
+
                 </section>
             )}
 
@@ -267,4 +272,3 @@ export default function Home({ usuario }) {
         </>
     );
 }
-    

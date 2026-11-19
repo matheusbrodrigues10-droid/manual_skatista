@@ -1,24 +1,23 @@
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { verificarSessao } from "@/lib/session";
 
 const BACKEND_URL =
     process.env.BACKEND_URL || "http://127.0.0.1:3001";
 
 async function obterUsuarioId() {
-    const sessao = await verificarSessao();
+    const cookieStore = await cookies();
 
-    const usuario =
-        sessao?.usuario ||
-        sessao?.user ||
-        sessao?.data?.usuario ||
-        sessao;
+    const token = cookieStore.get("session")?.value;
 
-    const id = Number(
-        usuario?.id ??
-        usuario?.usuario_id ??
-        usuario?.userId
-    );
+    const sessao = verificarSessao(token);
+
+    if (!sessao) {
+        return null;
+    }
+
+    const id = Number(sessao.id);
 
     if (!Number.isInteger(id) || id <= 0) {
         return null;
@@ -28,13 +27,24 @@ async function obterUsuarioId() {
 }
 
 function obterCabecalhos() {
+    const token = process.env.PROGRESSO_API_TOKEN;
+
+    if (!token) {
+        throw new Error(
+            "PROGRESSO_API_TOKEN não está configurado."
+        );
+    }
+
     return {
         "Content-Type": "application/json",
-        "x-progresso-token": process.env.PROGRESSO_API_TOKEN
+        "x-progresso-token": token
     };
 }
 
+// =====================================================
 // CONSULTAR PROGRESSO
+// =====================================================
+
 export async function GET() {
     try {
         const usuarioId = await obterUsuarioId();
@@ -49,6 +59,7 @@ export async function GET() {
         const response = await fetch(
             `${BACKEND_URL}/progresso/${usuarioId}`,
             {
+                method: "GET",
                 headers: obterCabecalhos(),
                 cache: "no-store"
             }
@@ -61,16 +72,25 @@ export async function GET() {
         });
 
     } catch (erro) {
-        console.error(erro);
+        console.error(
+            "Erro ao consultar progresso:",
+            erro
+        );
 
         return NextResponse.json(
-            { erro: "Erro ao consultar progresso." },
+            {
+                erro: "Não foi possível consultar o progresso.",
+                detalhe: erro.message
+            },
             { status: 500 }
         );
     }
 }
 
-// REGISTRAR CONTEÚDO ACESSADO
+// =====================================================
+// REGISTRAR VÍDEO ACESSADO
+// =====================================================
+
 export async function POST(request) {
     try {
         const usuarioId = await obterUsuarioId();
@@ -101,10 +121,16 @@ export async function POST(request) {
         });
 
     } catch (erro) {
-        console.error(erro);
+        console.error(
+            "Erro ao registrar progresso:",
+            erro
+        );
 
         return NextResponse.json(
-            { erro: "Erro ao registrar progresso." },
+            {
+                erro: "Não foi possível registrar o progresso.",
+                detalhe: erro.message
+            },
             { status: 500 }
         );
     }
