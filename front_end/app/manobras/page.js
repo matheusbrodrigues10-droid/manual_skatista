@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/PageHeader";
+import { registrarAcessoVideo } from "@/lib/progresso";
 
 const filtros = [
     { valor: "todos", texto: "Todos" },

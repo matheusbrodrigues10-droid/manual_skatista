@@ -3,11 +3,15 @@ const cors = require("cors");
 const db = require("./db");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+require("dotenv").config();
+
+const progressoRoutes = require("./progresso");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/", progressoRoutes);
 
 // =====================================================
 // SWAGGER

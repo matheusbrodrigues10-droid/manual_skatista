@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import { registrarAcessoVideo } from "@/lib/progresso";
 
 const filtros = [
     { valor: "todos", texto: "Todos" },
