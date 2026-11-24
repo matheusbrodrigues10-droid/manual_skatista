@@ -1,107 +1,85 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import PageHeader from "../../components/PageHeader";
-import { registrarAcessoVideo } from "@/lib/progresso";
+import AvisoDireitosAutorais from "../../components/AvisoDireitosAutorais";
 
-// =====================================================
+// ==========================================
 // VÍDEOS DE DICAS
-// =====================================================
+// ==========================================
 
 const videosDicas = [
     {
-        id: "y5ZsE3nmew4",
         titulo: "5 Dicas para evoluir mais rápido no skate",
     },
     {
-        id: "nN7fDnIBPmc",
         titulo: "Como Dropar na Rampa",
     },
     {
-        id: "vOoiKFP4Oow",
         titulo: "Como melhorar seu equilíbrio em cima do skate",
     },
     {
-        id: "ZoLiDtmf454",
         titulo: "10 Dicas para não se machucar no Skate",
     },
     {
-        id: "sIrLPzMtyl4",
         titulo: "Domine seu medo no Skate",
     },
 ];
 
-// =====================================================
-// EXTRAIR ID DO YOUTUBE
-// =====================================================
-
-function extrairYoutubeId(url) {
-    const resultado = String(url || "").match(
-        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
-    );
-
-    return resultado ? resultado[1] : "";
-}
-
-// =====================================================
+// ==========================================
 // NORMALIZAR TEXTO
-// =====================================================
+// ==========================================
 
 function normalizarTexto(texto) {
+
     return String(texto || "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim();
+
 }
 
-// =====================================================
-// CARTÃO DE VÍDEO
-// =====================================================
+// ==========================================
+// CARTÃO DE VÍDEO BLOQUEADO
+// ==========================================
 
-function VideoCard({ video, categoria, rastrear = false }) {
-
-    const isLifestyle = categoria === "Lifestyle";
-
-    const youtubeId = isLifestyle
-        ? extrairYoutubeId(video.video_url)
-        : video.id;
-
-    const videoUrl = isLifestyle
-        ? video.video_url
-        : `https://www.youtube.com/watch?v=${video.id}`;
-
-    function registrarVideo() {
-        if (!rastrear) return;
-
-        registrarAcessoVideo(
-            "lifestyle",
-            Number(video.id)
-        ).catch(console.error);
-    }
+function VideoCard({ video, categoria }) {
 
     return (
+
         <article className="dl-video-card">
 
-            <div className="dl-video-frame">
+            {/* ESPAÇO DO VÍDEO */}
 
-                {youtubeId ? (
-                    <iframe
-                        src={`https://www.youtube.com/embed/${youtubeId}`}
-                        title={video.titulo}
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                    />
-                ) : (
-                    <div>
-                        Vídeo indisponível
-                    </div>
-                )}
+            <div
+                className="dl-video-frame"
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    gap: "12px",
+                    background: "#171717"
+                }}
+            >
+
+                <span style={{ fontSize: "38px" }}>
+                    🔒
+                </span>
+
+                <span
+                    style={{
+                        color: "#999",
+                        fontSize: "12px"
+                    }}
+                >
+                    Conteúdo não disponível
+                </span>
 
             </div>
+
+            {/* INFORMAÇÕES */}
 
             <div className="dl-video-info">
 
@@ -109,27 +87,23 @@ function VideoCard({ video, categoria, rastrear = false }) {
                     {categoria}
                 </span>
 
-                <h3>{video.titulo}</h3>
+                <h3>
+                    {video.titulo}
+                </h3>
 
-                <a
-                    href={videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="dl-video-link"
-                    onClick={registrarVideo}
-                >
-                    Assistir no YouTube ↗
-                </a>
+                <AvisoDireitosAutorais />
 
             </div>
 
         </article>
+
     );
+
 }
 
-// =====================================================
+// ==========================================
 // PÁGINA DICAS E LIFESTYLE
-// =====================================================
+// ==========================================
 
 export default function VideosPage() {
 
@@ -139,12 +113,9 @@ export default function VideosPage() {
 
     const [erro, setErro] = useState("");
 
-    const [rastrearLifestyle, setRastrearLifestyle] =
-        useState(false);
-
-    // =================================================
-    // CARREGAR VÍDEOS DO BANCO DE DADOS
-    // =================================================
+    // ======================================
+    // CARREGAR VÍDEOS E PROGRESSO
+    // ======================================
 
     useEffect(() => {
 
@@ -154,21 +125,27 @@ export default function VideosPage() {
 
             try {
 
-                const [respostaVideos, respostaProgresso] =
-                    await Promise.all([
-                        fetch("/api/videos-lifestyle", {
-                            cache: "no-store"
-                        }),
+                const [
+                    respostaVideos,
+                    respostaProgresso
+                ] = await Promise.all([
 
-                        fetch("/api/progresso", {
-                            cache: "no-store"
-                        })
-                    ]);
+                    fetch("/api/videos-lifestyle", {
+                        cache: "no-store"
+                    }),
+
+                    fetch("/api/progresso", {
+                        cache: "no-store"
+                    })
+
+                ]);
 
                 if (!respostaVideos.ok) {
+
                     throw new Error(
-                        "Não foi possível carregar os vídeos de Lifestyle."
+                        "Não foi possível carregar os conteúdos de Lifestyle."
                     );
+
                 }
 
                 const videos = await respostaVideos.json();
@@ -178,23 +155,30 @@ export default function VideosPage() {
                     : null;
 
                 if (!Array.isArray(videos)) {
+
                     throw new Error(
-                        "Formato de vídeos inválido."
+                        "Formato de conteúdos inválido."
                     );
+
                 }
 
-                let videosExibidos = videos;
+                // Somente informações necessárias para os cartões.
+                // URLs de vídeos não são utilizadas na interface.
 
-                // -----------------------------------------
-                // SE O USUÁRIO FOR INTERMEDIÁRIO
-                // EXIBIR OS CINCO VÍDEOS SORTEADOS
-                // -----------------------------------------
+                const videosSemLinks = videos.map(video => ({
+                    id: video.id,
+                    titulo: video.titulo,
+                    categoria: video.categoria,
+                    descricao: video.descricao
+                }));
+
+                let videosExibidos = videosSemLinks;
+
+                // Mantém a seleção de conteúdos do usuário intermediário.
 
                 const nivel = normalizarTexto(
                     progresso?.nivelAtual
                 );
-
-                let rastrear = false;
 
                 if (nivel === "intermediario") {
 
@@ -207,18 +191,17 @@ export default function VideosPage() {
                         )
                     );
 
-                    videosExibidos = videos.filter(video =>
+                    videosExibidos = videosSemLinks.filter(video =>
                         idsSelecionados.has(Number(video.id))
                     );
 
-                    rastrear = true;
                 }
 
                 if (!ativo) return;
 
                 setVideosLifestyle(videosExibidos);
 
-                setRastrearLifestyle(rastrear);
+                setErro("");
 
             } catch (error) {
 
@@ -233,7 +216,9 @@ export default function VideosPage() {
                 if (ativo) {
                     setCarregando(false);
                 }
+
             }
+
         }
 
         carregarVideos();
@@ -244,12 +229,14 @@ export default function VideosPage() {
 
     }, []);
 
-    // =================================================
+    // ======================================
     // RENDERIZAÇÃO
-    // =================================================
+    // ======================================
 
     return (
+
         <>
+
             <PageHeader
                 icon="🛹"
                 titulo="Dicas e Lifestyle"
@@ -258,9 +245,7 @@ export default function VideosPage() {
 
             <main className="dl-content">
 
-                {/* =====================================
-                    SEÇÃO LIFESTYLE
-                ===================================== */}
+                {/* LIFESTYLE */}
 
                 <section className="dl-section">
 
@@ -283,23 +268,26 @@ export default function VideosPage() {
 
                     {carregando ? (
 
-                        <p>Carregando vídeos...</p>
+                        <p>
+                            Carregando conteúdos...
+                        </p>
 
                     ) : erro ? (
 
-                        <p>{erro}</p>
+                        <p>
+                            {erro}
+                        </p>
 
                     ) : videosLifestyle.length > 0 ? (
 
                         <div className="dl-video-grid">
 
-                            {videosLifestyle.map((video) => (
+                            {videosLifestyle.map(video => (
 
                                 <VideoCard
                                     key={video.id}
                                     video={video}
                                     categoria="Lifestyle"
-                                    rastrear={rastrearLifestyle}
                                 />
 
                             ))}
@@ -309,16 +297,14 @@ export default function VideosPage() {
                     ) : (
 
                         <p>
-                            Nenhum vídeo de Lifestyle encontrado.
+                            Nenhum conteúdo de Lifestyle encontrado.
                         </p>
 
                     )}
 
                 </section>
 
-                {/* =====================================
-                    SEÇÃO DICAS
-                ===================================== */}
+                {/* DICAS DE SKATE */}
 
                 <section className="dl-section">
 
@@ -333,18 +319,18 @@ export default function VideosPage() {
                         </h2>
 
                         <p>
-                            Aprenda técnicas, melhore seu equilíbrio,
-                            enfrente desafios e evolua com mais segurança.
+                            Conteúdos sobre técnicas, equilíbrio,
+                            treinamento e evolução no skate.
                         </p>
 
                     </div>
 
                     <div className="dl-video-grid">
 
-                        {videosDicas.map((video) => (
+                        {videosDicas.map((video, index) => (
 
                             <VideoCard
-                                key={video.id}
+                                key={index}
                                 video={video}
                                 categoria="Dicas de skate"
                             />
@@ -356,6 +342,9 @@ export default function VideosPage() {
                 </section>
 
             </main>
+
         </>
+
     );
+
 }

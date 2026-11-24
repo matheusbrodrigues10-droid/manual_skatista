@@ -953,13 +953,13 @@ app.get("/manobras", (req, res) => {
 // =========================================
 
 app.get("/montagens", (req, res) => {
+
     const sql = `
         SELECT
             id,
             nome,
             categoria,
             descricao,
-            video_url,
             icone,
             ordem
         FROM montagens
@@ -968,7 +968,9 @@ app.get("/montagens", (req, res) => {
     `;
 
     db.query(sql, (err, resultado) => {
+
         if (err) {
+
             console.error(
                 "Erro ao buscar montagens:",
                 err.message
@@ -977,12 +979,14 @@ app.get("/montagens", (req, res) => {
             return res.status(500).json({
                 erro: "Não foi possível buscar os tutoriais de montagem."
             });
+
         }
 
         return res.status(200).json(resultado);
-    });
-});
 
+    });
+
+});
 // =========================================
 // EQUIPAMENTOS
 // =========================================

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -56,14 +57,9 @@ export default function LoginPage() {
 
         } catch (error) {
 
-            console.error(
-                "Erro no login:",
-                error
-            );
+            console.error("Erro no login:", error);
 
-            setErro(
-                "Erro de conexão com o servidor."
-            );
+            setErro("Erro de conexão com o servidor.");
 
         } finally {
             setCarregando(false);
@@ -136,22 +132,25 @@ export default function LoginPage() {
 
             </form>
 
+            {/* TEXTO DE CADASTRO */}
+
             <div className="link-text">
-
                 Não tem conta?{" "}
-
                 <Link href="/cadastro">
                     Criar conta grátis
                 </Link>
-
             </div>
 
-            <Link
-                href="/"
-                className="btn btn-voltar"
-            >
-                ← Voltar
-            </Link>
+            {/* BOTÃO VOLTAR */}
+
+            <div className="login-back">
+                <Link
+                    href="/"
+                    className="btn btn-voltar"
+                >
+                    ← Voltar
+                </Link>
+            </div>
 
         </div>
     );

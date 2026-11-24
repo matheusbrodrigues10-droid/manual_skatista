@@ -44,7 +44,7 @@ function ImagemRoupa({ roupa }) {
         return (
             <div className="roupa-imagem-placeholder">
                 <span>{roupa.icone || "👕"}</span>
-                <small>Imagem não cadastrada</small>
+                <small></small>
             </div>
         );
     }

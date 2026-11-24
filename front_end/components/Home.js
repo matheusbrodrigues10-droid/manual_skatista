@@ -1,7 +1,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import ProgressoNivel from "@/components/Progresso";
 
 export default function Home({ usuario }) {
     return (
@@ -76,7 +75,7 @@ export default function Home({ usuario }) {
                     </p>
 
                     {/* PROGRESSÃO DE NÍVEL DO USUÁRIO */}
-                    <ProgressoNivel />
+                    
 
                 </section>
             )}

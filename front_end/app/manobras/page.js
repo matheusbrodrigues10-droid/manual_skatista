@@ -1,400 +1,539 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-import PageHeader from "@/components/PageHeader";
-import { registrarAcessoVideo } from "@/lib/progresso";
+import PageHeader from "../../components/PageHeader";
 
-const filtros = [
-    { valor: "todos", texto: "Todos" },
-    { valor: "iniciante", texto: "Iniciante" },
-    { valor: "intermediario", texto: "Intermediário" },
-    { valor: "avancado", texto: "Avançado" },
-    { valor: "extra", texto: "Extra" }
+// ==========================================
+// NÍVEIS DAS MANOBRAS
+// ==========================================
+
+const niveis = [
+    {
+        valor: "iniciante",
+        titulo: "Iniciante",
+        descricao: "Comece aprendendo os movimentos fundamentais do skate.",
+        cor: "#36B76A",
+        icone: "🟢"
+    },
+    {
+        valor: "intermediario",
+        titulo: "Intermediário",
+        descricao: "Evolua sua técnica e aprenda novos movimentos.",
+        cor: "#E5A52B",
+        icone: "🟡"
+    },
+    {
+        valor: "avancado",
+        titulo: "Avançado",
+        descricao: "Desafie suas habilidades com manobras mais complexas.",
+        cor: "#D72638",
+        icone: "🔴"
+    }
 ];
 
-const nomesNiveis = {
-    iniciante: "Iniciante",
-    intermediario: "Intermediário",
-    avancado: "Avançado"
-};
+// ==========================================
+// NORMALIZAR TEXTO
+// ==========================================
 
-function obterVideoId(url) {
-    try {
-        const endereco = new URL(url);
+function normalizarTexto(texto) {
 
-        if (endereco.hostname.includes("youtu.be")) {
-            return endereco.pathname
-                .split("/")
-                .filter(Boolean)[0] || null;
-        }
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 
-        if (endereco.pathname.startsWith("/embed/")) {
-            return endereco.pathname
-                .split("/")[2] || null;
-        }
-
-        return endereco.searchParams.get("v");
-    } catch {
-        return null;
-    }
 }
 
-function obterUrlIncorporada(url) {
-    const videoId = obterVideoId(url);
+// ==========================================
+// EXTRAIR ID DO YOUTUBE
+// ==========================================
 
-    if (!videoId) {
-        return null;
-    }
+function extrairYoutubeId(url) {
 
-    const parametros = new URL(url).searchParams;
-    const tempo = parametros.get("t") || "";
+    const resultado = String(url || "").match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
+    );
 
-    let segundos = 0;
+    return resultado ? resultado[1] : "";
 
-    if (/^\d+$/.test(tempo)) {
-        segundos = Number(tempo);
-    } else {
-        const match = tempo.match(
-            /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/
-        );
-
-        if (match && match[0]) {
-            segundos =
-                Number(match[1] || 0) * 3600 +
-                Number(match[2] || 0) * 60 +
-                Number(match[3] || 0);
-        }
-    }
-
-    const inicio = segundos > 0
-        ? `?start=${segundos}`
-        : "";
-
-    return `https://www.youtube-nocookie.com/embed/${videoId}${inicio}`;
 }
 
-function CartaoManobra({ manobra, selecionada, onClick }) {
-    const textoNivel = manobra.categoria === "extra"
-        ? "EXTRA"
-        : nomesNiveis[manobra.nivel] || manobra.nivel;
+// ==========================================
+// CARTÃO DA MANOBRA
+// ==========================================
+
+function ManobraCard({ manobra, nivel }) {
+
+    const youtubeId = extrairYoutubeId(
+        manobra.video_url
+    );
+
+    const videoUrl = youtubeId
+        ? `https://www.youtube.com/watch?v=${youtubeId}`
+        : null;
+
+    const thumbnailUrl = youtubeId
+        ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`
+        : null;
 
     return (
-        <button
-            type="button"
-            className={`manobra-card ${
-                selecionada ? "manobra-card-selecionada" : ""
-            }`}
-            onClick={onClick}
-            aria-pressed={selecionada}
-        >
-            <div className="manobra-card-topo">
-                <span className="manobra-icone">
-                    {manobra.icone || "🛹"}
-                </span>
 
-                <span
-                    className={`manobra-badge manobra-badge-${manobra.categoria === "extra" ? "extra" : manobra.nivel}`}
-                >
-                    {textoNivel}
-                </span>
+        <article className="dl-video-card">
+
+            {/* IMAGEM DE PRÉVIA DO VÍDEO */}
+
+            <div
+                className="dl-video-frame"
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    aspectRatio: "16 / 9",
+                    overflow: "hidden",
+                    background: "#171717"
+                }}
+            >
+
+                {youtubeId ? (
+
+                    <a
+                        href={videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Assistir ${manobra.nome} no YouTube`}
+                        style={{
+                            position: "relative",
+                            display: "block",
+                            width: "100%",
+                            height: "100%",
+                            cursor: "pointer"
+                        }}
+                    >
+
+                        <img
+                            src={thumbnailUrl}
+                            alt={`Prévia do vídeo da manobra ${manobra.nome}`}
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            style={{
+                                display: "block",
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover"
+                            }}
+                        />
+
+                        {/* BOTÃO DE REPRODUÇÃO */}
+
+                        <span
+                            aria-hidden="true"
+                            style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                width: "58px",
+                                height: "58px",
+                                borderRadius: "50%",
+                                background: "#D72638",
+                                color: "#fff",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "23px",
+                                paddingLeft: "4px",
+                                boxShadow: "0 3px 15px rgba(0,0,0,0.5)"
+                            }}
+                        >
+                            ▶
+                        </span>
+
+                    </a>
+
+                ) : (
+
+                    <div
+                        style={{
+                            display: "flex",
+                            width: "100%",
+                            height: "100%",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#999"
+                        }}
+                    >
+                        Vídeo indisponível
+                    </div>
+
+                )}
+
             </div>
 
-            <h3 className="manobra-card-titulo">
-                {manobra.nome}
-            </h3>
+            {/* INFORMAÇÕES */}
 
-            <p className="manobra-card-descricao">
-                {manobra.descricao}
-            </p>
+            <div className="dl-video-info">
 
-            <span className="manobra-card-acao">
-                ▶ Ver tutorial
-            </span>
-        </button>
+                <span
+                    className="dl-video-category"
+                    style={{
+                        borderLeft: `3px solid ${nivel.cor}`
+                    }}
+                >
+                    {nivel.titulo}
+                </span>
+
+                <h3>
+                    {manobra.icone || "🛹"} {manobra.nome}
+                </h3>
+
+                <p>
+                    {manobra.descricao}
+                </p>
+
+                {manobra.categoria && (
+
+                    <small
+                        style={{
+                            display: "block",
+                            marginTop: "10px",
+                            color: "#999"
+                        }}
+                    >
+                        Categoria: {manobra.categoria}
+                    </small>
+
+                )}
+
+                {videoUrl && (
+
+                    <a
+                        href={videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="dl-video-link"
+                    >
+                        Assistir no YouTube ↗
+                    </a>
+
+                )}
+
+            </div>
+
+        </article>
+
     );
+
 }
 
+// ==========================================
+// PÁGINA MANOBRAS
+// ==========================================
+
 export default function ManobrasPage() {
+
     const [manobras, setManobras] = useState([]);
+
     const [filtro, setFiltro] = useState("todos");
-    const [selecionada, setSelecionada] = useState(null);
+
     const [carregando, setCarregando] = useState(true);
+
     const [erro, setErro] = useState("");
 
+    // ======================================
+    // CARREGAR MANOBRAS DO BANCO DE DADOS
+    // ======================================
+
     useEffect(() => {
+
+        let ativo = true;
+
         async function carregarManobras() {
+
             try {
-                const response = await fetch(
+
+                const resposta = await fetch(
                     "/api/manobras",
                     {
                         cache: "no-store"
                     }
                 );
 
-                const dados = await response.json();
+                const dados = await resposta.json();
 
-                if (!response.ok) {
+                if (!resposta.ok) {
+
                     throw new Error(
                         dados.erro ||
                         "Não foi possível carregar as manobras."
                     );
+
                 }
 
-                setManobras(
-                    Array.isArray(dados) ? dados : []
-                );
+                if (!Array.isArray(dados)) {
+
+                    throw new Error(
+                        "Os dados recebidos estão em um formato inválido."
+                    );
+
+                }
+
+                if (ativo) {
+
+                    setManobras(dados);
+
+                    setErro("");
+
+                }
+
             } catch (error) {
+
                 console.error(
-                    "Erro ao carregar manobras:",
+                    "ERRO AO CARREGAR MANOBRAS:",
                     error
                 );
 
-                setErro(
-                    error.message ||
-                    "Não foi possível carregar as manobras."
-                );
+                if (ativo) {
+
+                    setErro(
+                        error.message ||
+                        "Erro ao carregar as manobras."
+                    );
+
+                }
+
             } finally {
-                setCarregando(false);
+
+                if (ativo) {
+                    setCarregando(false);
+                }
+
             }
+
         }
 
         carregarManobras();
+
+        return () => {
+            ativo = false;
+        };
+
     }, []);
 
-    useEffect(() => {
-        if (selecionada) {
-            document
-                .getElementById("detalhe-manobra")
-                ?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-        }
-    }, [selecionada]);
+    // ======================================
+    // FILTRAR POR NÍVEL
+    // ======================================
 
-    const grupos = filtro === "todos"
-        ? [
-            {
-                chave: "iniciante",
-                titulo: "Iniciante",
-                descricao: "Aprenda os fundamentos e construa sua base.",
-                itens: manobras.filter(
-                    (m) =>
-                        m.categoria === "nivel" &&
-                        m.nivel === "iniciante"
-                )
-            },
-            {
-                chave: "intermediario",
-                titulo: "Intermediário",
-                descricao: "Evolua a técnica e combine movimentos.",
-                itens: manobras.filter(
-                    (m) =>
-                        m.categoria === "nivel" &&
-                        m.nivel === "intermediario"
-                )
-            },
-            {
-                chave: "avancado",
-                titulo: "Avançado",
-                descricao: "Desafie seu domínio do shape e sua precisão.",
-                itens: manobras.filter(
-                    (m) =>
-                        m.categoria === "nivel" &&
-                        m.nivel === "avancado"
-                )
-            },
-            {
-                chave: "extra",
-                titulo: "Extra",
-                descricao: "Conteúdos complementares para continuar evoluindo.",
-                itens: manobras.filter(
-                    (m) => m.categoria === "extra"
-                )
-            }
-        ].filter((grupo) => grupo.itens.length > 0)
-        : [
-            {
-                chave: filtro,
-                titulo: filtro === "extra"
-                    ? "Extra"
-                    : nomesNiveis[filtro],
-                descricao: filtro === "extra"
-                    ? "Conteúdos complementares para sua evolução."
-                    : `Manobras de nível ${nomesNiveis[filtro]?.toLowerCase()}.`,
-                itens: manobras.filter((m) =>
-                    filtro === "extra"
-                        ? m.categoria === "extra"
-                        : m.categoria === "nivel" &&
-                          m.nivel === filtro
-                )
-            }
-        ].filter((grupo) => grupo.itens.length > 0);
+    const manobrasFiltradas = filtro === "todos"
 
-    function mudarFiltro(valor) {
-        setFiltro(valor);
-        setSelecionada(null);
-    }
+        ? manobras
+
+        : manobras.filter(manobra => {
+
+            return (
+                normalizarTexto(manobra.nivel) === filtro
+            );
+
+        });
+
+    // ======================================
+    // EXIBIR A PÁGINA
+    // ======================================
 
     return (
+
         <>
+
             <PageHeader
                 icon="🛹"
                 titulo="Manobras"
-                descricao="Do iniciante ao avançado, aprenda cada trick com tutoriais em vídeo."
+                descricao="Do iniciante ao avançado. Aprenda novas manobras e evolua no skate."
             />
 
-            <main className="manobras-conteudo">
-                <nav
-                    className="manobras-filtros"
-                    aria-label="Filtrar manobras por nível"
-                >
-                    {filtros.map((item) => (
+            <main className="dl-content">
+
+                <section className="dl-section">
+
+                    {/* INTRODUÇÃO */}
+
+                    <div className="dl-section-intro">
+
+                        <span className="dl-kicker">
+                            EVOLUA NO SKATE
+                        </span>
+
+                        <h2>
+                            Aprenda novas <em>manobras</em>
+                        </h2>
+
+                        <p>
+                            Escolha seu nível, assista aos tutoriais
+                            e desenvolva suas habilidades em cima do skate.
+                        </p>
+
+                    </div>
+
+                    {/* FILTROS */}
+
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "10px",
+                            marginBottom: "30px"
+                        }}
+                    >
+
                         <button
-                            key={item.valor}
                             type="button"
-                            className={`manobras-filtro ${
-                                filtro === item.valor
-                                    ? "manobras-filtro-ativo"
-                                    : ""
-                            }`}
-                            onClick={() => mudarFiltro(item.valor)}
-                            aria-pressed={filtro === item.valor}
+                            onClick={() => setFiltro("todos")}
+                            style={{
+                                background: filtro === "todos"
+                                    ? "#D72638"
+                                    : "#191919",
+                                color: "#fff",
+                                border: "1px solid #444",
+                                padding: "10px 18px",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                fontWeight: "bold"
+                            }}
                         >
-                            {item.texto}
+                            Todas
                         </button>
-                    ))}
-                </nav>
 
-                {carregando && (
-                    <p className="manobras-mensagem">
-                        Carregando manobras...
-                    </p>
-                )}
-
-                {!carregando && erro && (
-                    <p className="manobras-erro">
-                        ❌ {erro}
-                    </p>
-                )}
-
-                {!carregando && !erro && manobras.length === 0 && (
-                    <p className="manobras-mensagem">
-                        Nenhuma manobra está cadastrada no momento.
-                    </p>
-                )}
-
-                {!carregando && !erro && grupos.map((grupo) => (
-                    <section
-                        className="manobras-grupo"
-                        key={grupo.chave}
-                    >
-                        <div className="manobras-grupo-cabecalho">
-                            <div>
-                                <h2>{grupo.titulo}</h2>
-                                <p>{grupo.descricao}</p>
-                            </div>
-
-                            <span className="manobras-contagem">
-                                {grupo.itens.length}{" "}
-                                {grupo.itens.length === 1
-                                    ? "conteúdo"
-                                    : "conteúdos"}
-                            </span>
-                        </div>
-
-                        <div className="manobras-grid">
-                            {grupo.itens.map((manobra) => (
-                                <CartaoManobra
-                                    key={manobra.id}
-                                    manobra={manobra}
-                                    selecionada={
-                                        selecionada?.id === manobra.id
-                                    }
-                                    onClick={() =>
-                                        setSelecionada(manobra)
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </section>
-                ))}
-
-                {selecionada && (
-                    <section
-                        id="detalhe-manobra"
-                        className="manobra-detalhe"
-                    >
-                        <div className="manobra-detalhe-cabecalho">
-                            <div>
-                                <span className="manobra-detalhe-etiqueta">
-                                    {selecionada.categoria === "extra"
-                                        ? "CONTEÚDO EXTRA"
-                                        : `NÍVEL ${nomesNiveis[selecionada.nivel]?.toUpperCase()}`}
-                                </span>
-
-                                <h2>{selecionada.nome}</h2>
-                            </div>
+                        {niveis.map(nivel => (
 
                             <button
                                 type="button"
-                                className="manobra-fechar"
-                                onClick={() => setSelecionada(null)}
-                                aria-label="Fechar tutorial"
+                                key={nivel.valor}
+                                onClick={() => setFiltro(nivel.valor)}
+                                style={{
+                                    background: filtro === nivel.valor
+                                        ? nivel.cor
+                                        : "#191919",
+                                    color: "#fff",
+                                    border: "1px solid #444",
+                                    padding: "10px 18px",
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
+                                    fontWeight: "bold"
+                                }}
                             >
-                                ✕
+                                {nivel.icone} {nivel.titulo}
                             </button>
-                        </div>
 
-                        <div className="manobra-detalhe-layout">
-                            <div className="manobra-video">
-                                {obterUrlIncorporada(
-                                    selecionada.video_url
-                                ) ? (
-                                    <iframe
-                                        src={obterUrlIncorporada(
-                                            selecionada.video_url
-                                        )}
-                                        title={`Tutorial: ${selecionada.nome}`}
-                                        loading="lazy"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        referrerPolicy="strict-origin-when-cross-origin"
-                                        allowFullScreen
-                                    />
-                                ) : (
-                                    <p>
-                                        Não foi possível preparar a prévia deste vídeo.
-                                    </p>
-                                )}
-                            </div>
+                        ))}
 
-                            <div className="manobra-detalhe-texto">
-                                <h3>Sobre a manobra</h3>
+                    </div>
 
-                                <p>{selecionada.descricao}</p>
+                    {/* CARREGAMENTO */}
 
-                                {selecionada.categoria === "nivel" && (
-                                    <div className="manobra-info-nivel">
-                                        <span>Nível de dificuldade</span>
-                                        <strong>
-                                            {nomesNiveis[selecionada.nivel]}
-                                        </strong>
-                                    </div>
-                                )}
+                    {carregando && (
 
-                                <a
-                                    href={selecionada.video_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="manobra-abrir-youtube"
-                                >
-                                    Assistir diretamente no YouTube ↗
-                                </a>
-                            </div>
-                        </div>
-                    </section>
-                )}
+                        <p>
+                            Carregando manobras...
+                        </p>
+
+                    )}
+
+                    {/* ERRO */}
+
+                    {!carregando && erro && (
+
+                        <p
+                            style={{
+                                color: "#D72638",
+                                padding: "20px 0"
+                            }}
+                        >
+                            {erro}
+                        </p>
+
+                    )}
+
+                    {/* MANOBRAS */}
+
+                    {!carregando && !erro && (
+
+                        <>
+
+                            {manobrasFiltradas.length > 0 ? (
+
+                                niveis.map(nivel => {
+
+                                    const manobrasNivel =
+                                        manobrasFiltradas.filter(
+                                            manobra =>
+                                                normalizarTexto(manobra.nivel) === nivel.valor
+                                        );
+
+                                    if (!manobrasNivel.length) {
+                                        return null;
+                                    }
+
+                                    return (
+
+                                        <section
+                                            key={nivel.valor}
+                                            style={{
+                                                marginBottom: "45px"
+                                            }}
+                                        >
+
+                                            <div className="dl-section-intro">
+
+                                                <span className="dl-kicker">
+                                                    {nivel.icone} NÍVEL {nivel.titulo.toUpperCase()}
+                                                </span>
+
+                                                <h2>
+                                                    {nivel.titulo}
+                                                </h2>
+
+                                                <p>
+                                                    {nivel.descricao}
+                                                </p>
+
+                                            </div>
+
+                                            <div className="dl-video-grid">
+
+                                                {manobrasNivel.map(manobra => (
+
+                                                    <ManobraCard
+                                                        key={manobra.id}
+                                                        manobra={manobra}
+                                                        nivel={nivel}
+                                                    />
+
+                                                ))}
+
+                                            </div>
+
+                                        </section>
+
+                                    );
+
+                                })
+
+                            ) : (
+
+                                <p>
+                                    Nenhuma manobra encontrada para este nível.
+                                </p>
+
+                            )}
+
+                        </>
+
+                    )}
+
+                </section>
+
             </main>
+
         </>
+
     );
+
 }

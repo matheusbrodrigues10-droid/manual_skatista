@@ -450,7 +450,6 @@ async function calcularProgresso(usuarioId, permitirAvanco = true) {
     const lifestyleComStatus = videosLifestyle.map(video => ({
         id: Number(video.id),
         titulo: video.titulo,
-        url: video.video_url,
         concluido: concluidos.has(
             `lifestyle:${Number(video.id)}`
         )
@@ -623,6 +622,7 @@ router.post(
     }
 );
 
+
 // =====================================================
 // LISTAR VÍDEOS DE LIFESTYLE
 // =====================================================
@@ -638,8 +638,7 @@ router.get(
                     id,
                     titulo,
                     categoria,
-                    descricao,
-                    video_url
+                    descricao
                  FROM videos_lifestyle
                  WHERE ativo = 1
                  ORDER BY id DESC`
@@ -656,5 +655,6 @@ router.get(
         }
     }
 );
+
 
 module.exports = router;

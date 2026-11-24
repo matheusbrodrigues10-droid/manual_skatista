@@ -46,7 +46,7 @@ function ImagemEquipamento({ equipamento }) {
             <div className="equipamento-imagem-placeholder">
                 <span>{equipamento.icone || "🛹"}</span>
                 <small>
-                    Imagem do produto não cadastrada
+                    
                 </small>
             </div>
         );
